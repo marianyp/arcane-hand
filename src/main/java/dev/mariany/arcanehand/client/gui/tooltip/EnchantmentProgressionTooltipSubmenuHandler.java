@@ -37,7 +37,7 @@ public class EnchantmentProgressionTooltipSubmenuHandler implements TooltipSubme
             );
 
             if (previousEnchantmentIndex != selectedEnchantmentIndex) {
-                this.sendPacket(item, slotId, selectedEnchantmentIndex);
+                this.update(item, selectedEnchantmentIndex);
             }
         }
 
@@ -46,24 +46,23 @@ public class EnchantmentProgressionTooltipSubmenuHandler implements TooltipSubme
 
     @Override
     public void reset(Slot slot) {
-        this.reset(slot.getStack(), slot.id);
+        this.reset(slot.getStack());
     }
 
     @Override
     public void onMouseClick(Slot slot, SlotActionType actionType) {
         if (actionType == SlotActionType.QUICK_MOVE || actionType == SlotActionType.SWAP) {
-            this.reset(slot.getStack(), slot.id);
+            this.reset(slot.getStack());
         }
     }
 
-    public void reset(ItemStack item, int slotId) {
-        this.sendPacket(item, slotId, 0);
+    public void reset(ItemStack stack) {
+        this.update(stack, 0);
     }
 
-    private void sendPacket(ItemStack stack, int slotId, int selectedEnchantmentIndex) {
+    private void update(ItemStack stack, int selectedEnchantmentIndex) {
         if (selectedEnchantmentIndex < GauntletItem.getEnchantmentCount(stack)) {
             GauntletItem.setSelectedEnchantmentIndex(stack, selectedEnchantmentIndex);
-            // ClientPlayNetworking.send(new EnchantmentSelectedPayload(slotId, selectedEnchantmentIndex));
         }
     }
 }
