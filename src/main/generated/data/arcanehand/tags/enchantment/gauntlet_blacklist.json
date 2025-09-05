@@ -1,0 +1,9 @@
+{
+  "values": [
+    "minecraft:sweeping_edge",
+    {
+      "id": "#minecraft:curse",
+      "required": false
+    }
+  ]
+}

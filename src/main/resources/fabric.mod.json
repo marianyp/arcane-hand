@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "id": "arcanehand",
+  "version": "${version}",
+  "name": "Arcane Hand",
+  "description": "This is an example description! Tell everyone what your mod is about!",
+  "authors": [
+    "Me!"
+  ],
+  "contact": {
+    "homepage": "https://fabricmc.net/",
+    "sources": "https://github.com/FabricMC/fabric-example-mod"
+  },
+  "license": "ARR",
+  "icon": "assets/arcanehand/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "dev.mariany.arcanehand.ArcaneHand"
+    ],
+    "client": [
+      "dev.mariany.arcanehand.client.ArcaneHandClient"
+    ],
+    "fabric-datagen": [
+      "dev.mariany.arcanehand.ArcaneHandDataGenerator"
+    ]
+  },
+  "mixins": [
+    "arcanehand.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.17.2",
+    "minecraft": "~1.21.8",
+    "java": ">=21",
+    "fabric-api": "*"
+  }
+}

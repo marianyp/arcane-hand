@@ -1,0 +1,24 @@
+{
+  "required": true,
+  "package": "dev.mariany.arcanehand.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "ExperienceOrbEntityMixin",
+    "LivingEntityMixin",
+    "accessor.EntityAccessor"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  },
+  "client": [
+    "HeldItemRendererMixin",
+    "ItemModelManagerMixin",
+    "PlayerEntityRendererMixin",
+    "PlayerEntityRenderStateMixin",
+    "accessor.LivingEntityRendererAccessor",
+    "accessor.PlayerEntityModelAccessor"
+  ]
+}

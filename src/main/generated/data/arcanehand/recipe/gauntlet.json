@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "L": "minecraft:leather",
+    "N": "minecraft:netherite_ingot"
+  },
+  "pattern": [
+    "LLL",
+    "LLL",
+    " N "
+  ],
+  "result": {
+    "count": 1,
+    "id": "arcanehand:gauntlet"
+  }
+}

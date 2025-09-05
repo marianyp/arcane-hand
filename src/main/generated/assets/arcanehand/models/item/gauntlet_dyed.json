@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "arcanehand:item/gauntlet",
+    "layer1": "arcanehand:item/gauntlet_overlay"
+  }
+}

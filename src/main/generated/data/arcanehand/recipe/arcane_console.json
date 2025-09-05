@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": "minecraft:amethyst_shard",
+    "D": "minecraft:diamond",
+    "S": "minecraft:smooth_stone"
+  },
+  "pattern": [
+    "SDS",
+    "DAD",
+    "SDS"
+  ],
+  "result": {
+    "count": 1,
+    "id": "arcanehand:arcane_console"
+  }
+}
