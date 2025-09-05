@@ -21,7 +21,10 @@ import net.minecraft.text.Text;
 import java.util.*;
 import java.util.function.Consumer;
 
-public class EnchantmentProgressionComponent implements TooltipAppender {
+public record EnchantmentProgressionComponent(
+        ImmutableMap<RegistryKey<Enchantment>, EnchantmentProgression> enchantments
+)
+        implements TooltipAppender {
     public static final EnchantmentProgressionComponent DEFAULT = new EnchantmentProgressionComponent(new HashMap<>());
 
     private static final Codec<RegistryKey<Enchantment>> ENCHANTMENT_CODEC =
@@ -43,10 +46,8 @@ public class EnchantmentProgressionComponent implements TooltipAppender {
             EnchantmentProgressionComponent::new
     );
 
-    private final Map<RegistryKey<Enchantment>, EnchantmentProgression> enchantments;
-
     public EnchantmentProgressionComponent(Map<RegistryKey<Enchantment>, EnchantmentProgression> enchantments) {
-        this.enchantments = enchantments;
+        this(ImmutableMap.copyOf(enchantments));
     }
 
     @Override
@@ -58,7 +59,8 @@ public class EnchantmentProgressionComponent implements TooltipAppender {
     ) {
     }
 
-    public Map<RegistryKey<Enchantment>, EnchantmentProgression> getEnchantments() {
+    @Override
+    public ImmutableMap<RegistryKey<Enchantment>, EnchantmentProgression> enchantments() {
         return ImmutableMap.copyOf(this.enchantments);
     }
 
@@ -84,13 +86,15 @@ public class EnchantmentProgressionComponent implements TooltipAppender {
         return builder.build();
     }
 
-    public EnchantmentProgressionComponent prune() {
-        for (Map.Entry<RegistryKey<Enchantment>, EnchantmentProgression> entry : this.enchantments.entrySet()) {
+    public EnchantmentProgressionComponent excludingUnset() {
+        Map<RegistryKey<Enchantment>, EnchantmentProgression> enchantments = new HashMap<>(this.enchantments);
+
+        for (Map.Entry<RegistryKey<Enchantment>, EnchantmentProgression> entry : enchantments.entrySet()) {
             if (entry.getValue().state().equals(EnchantmentProgressionState.UNSET)) {
-                this.enchantments.remove(entry.getKey());
+                enchantments.remove(entry.getKey());
             }
         }
 
-        return this;
+        return new EnchantmentProgressionComponent(enchantments);
     }
 }

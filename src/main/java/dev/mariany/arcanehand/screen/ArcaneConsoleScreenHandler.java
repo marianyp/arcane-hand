@@ -239,7 +239,7 @@ public class ArcaneConsoleScreenHandler extends ScreenHandler {
                     EnchantmentProgressionComponent.DEFAULT
             );
 
-            this.availableEnchantments.putAll(enchantmentProgressionComponent.getEnchantments());
+            this.availableEnchantments.putAll(enchantmentProgressionComponent.enchantments());
         }
     }
 

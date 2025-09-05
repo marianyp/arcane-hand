@@ -60,7 +60,7 @@ public class GauntletItem extends Item {
         );
 
         Map<RegistryKey<Enchantment>, EnchantmentProgression> progression =
-                new HashMap<>(enchantmentProgressionComponent.getEnchantments());
+                new HashMap<>(enchantmentProgressionComponent.enchantments());
 
         progression.put(enchantmentKey, progress);
 
@@ -72,7 +72,8 @@ public class GauntletItem extends Item {
             Map<RegistryKey<Enchantment>, EnchantmentProgression> progression,
             ItemStack stack
     ) {
-        EnchantmentProgressionComponent progressionComponent = new EnchantmentProgressionComponent(progression).prune();
+        EnchantmentProgressionComponent progressionComponent =
+                new EnchantmentProgressionComponent(progression).excludingUnset();
 
         stack.set(AHComponents.ENCHANTMENT_PROGRESSION, progressionComponent);
         stack.set(DataComponentTypes.ENCHANTMENTS, progressionComponent.toEnchantments(dynamicRegistryManager));
@@ -94,7 +95,7 @@ public class GauntletItem extends Item {
         Map<RegistryKey<Enchantment>, EnchantmentProgression> progression = new HashMap<>();
 
         List<Map.Entry<RegistryKey<Enchantment>, EnchantmentProgression>> entries = new ArrayList<>(
-                enchantmentProgressionComponent.getEnchantments().entrySet()
+                enchantmentProgressionComponent.enchantments().entrySet()
         );
 
         Collections.shuffle(entries, world.random::nextLong);
