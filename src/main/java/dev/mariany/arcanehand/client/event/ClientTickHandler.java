@@ -2,6 +2,8 @@ package dev.mariany.arcanehand.client.event;
 
 import dev.mariany.arcanehand.item.AHItems;
 import dev.mariany.arcanehand.mixin.accessor.EntityAccessor;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -11,13 +13,14 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import org.jetbrains.annotations.Nullable;
 
+@Environment(EnvType.CLIENT)
 public class ClientTickHandler {
     private static final ItemStack DEFAULT_STACK = ItemStack.EMPTY;
 
     private static ItemStack previousMainHandItem = DEFAULT_STACK;
     private static ItemStack previousOffHandItem = DEFAULT_STACK;
 
-    public static void registerTickHandler() {
+    public static void register() {
         ClientTickEvents.END_CLIENT_TICK.register(ClientTickHandler::onClientTick);
     }
 

@@ -15,17 +15,21 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.*;
-import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntryList;
-import net.minecraft.registry.tag.EnchantmentTags;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public class ArcaneConsoleScreenHandler extends ScreenHandler {
     private static final Identifier EMPTY_GAUNTLET_SLOT_TEXTURE =
@@ -79,50 +83,10 @@ public class ArcaneConsoleScreenHandler extends ScreenHandler {
     }
 
     public List<Map.Entry<RegistryKey<Enchantment>, EnchantmentProgression>> getSortedAvailableEnchantments() {
-        return sortByTooltipOrder(
+        return EnchantmentProgressionComponent.sortByTooltipOrder(
                 this.world.getRegistryManager(),
                 this.getAvailableEnchantments().entrySet().stream().toList()
         );
-    }
-
-    private static List<Map.Entry<RegistryKey<Enchantment>, EnchantmentProgression>> sortByTooltipOrder(
-            RegistryWrapper.WrapperLookup registries,
-            List<Map.Entry<RegistryKey<Enchantment>, EnchantmentProgression>> entries
-    ) {
-        RegistryWrapper.Impl<Enchantment> enchantmentRegistry = registries.getOrThrow(RegistryKeys.ENCHANTMENT);
-        Optional<RegistryEntryList.Named<Enchantment>> optionalOrderList = enchantmentRegistry.getOptional(
-                EnchantmentTags.TOOLTIP_ORDER
-        );
-
-        if (optionalOrderList.isPresent()) {
-            RegistryEntryList<Enchantment> orderList = optionalOrderList.get();
-
-            Map<RegistryKey<Enchantment>, Integer> orderMap = new HashMap<>();
-
-            int index = 0;
-
-            for (RegistryEntry<Enchantment> entry : orderList) {
-                Optional<RegistryKey<Enchantment>> optionalEnchantmentKey = entry.getKey();
-
-                if (optionalEnchantmentKey.isPresent()) {
-                    orderMap.put(optionalEnchantmentKey.get(), ++index);
-                }
-            }
-
-            return entries
-                    .stream()
-                    .sorted(
-                            Comparator.comparingInt(
-                                    entry -> orderMap.getOrDefault(
-                                            entry.getKey(),
-                                            Integer.MAX_VALUE
-                                    )
-                            )
-                    )
-                    .toList();
-        }
-
-        return entries;
     }
 
     @Override

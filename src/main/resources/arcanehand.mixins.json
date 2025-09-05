@@ -4,6 +4,7 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "ExperienceOrbEntityMixin",
+    "ItemEnchantmentsComponentMixin",
     "LivingEntityMixin",
     "accessor.EntityAccessor"
   ],
@@ -14,6 +15,7 @@
     "requireAnnotations": true
   },
   "client": [
+    "HandledScreenMixin",
     "HeldItemRendererMixin",
     "ItemModelManagerMixin",
     "PlayerEntityRendererMixin",

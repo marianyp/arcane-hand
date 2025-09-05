@@ -39,6 +39,38 @@ public class GauntletItem extends Item {
         return false;
     }
 
+    public static int getEnchantmentCount(ItemStack stack) {
+        return Math.toIntExact(
+                stack.getOrDefault(AHComponents.ENCHANTMENT_PROGRESSION, EnchantmentProgressionComponent.DEFAULT)
+                     .enchantments()
+                     .values()
+                     .stream()
+                     .filter(EnchantmentProgression::isEnabled)
+                     .count()
+        );
+    }
+
+    public static int getSelectedEnchantmentIndex(ItemStack stack) {
+        return stack.getOrDefault(AHComponents.ENCHANTMENT_PROGRESSION, EnchantmentProgressionComponent.DEFAULT)
+                    .selectedEnchantment();
+    }
+
+    public static void setSelectedEnchantmentIndex(ItemStack stack, int selectedEnchantmentIndex) {
+        EnchantmentProgressionComponent enchantmentProgressionComponent = stack.get(
+                AHComponents.ENCHANTMENT_PROGRESSION
+        );
+
+        if (enchantmentProgressionComponent != null) {
+            stack.set(
+                    AHComponents.ENCHANTMENT_PROGRESSION,
+                    new EnchantmentProgressionComponent(
+                            enchantmentProgressionComponent.enchantments(),
+                            selectedEnchantmentIndex
+                    )
+            );
+        }
+    }
+
     public static boolean isAcceptable(Enchantment enchantment) {
         return enchantment
                 .definition()

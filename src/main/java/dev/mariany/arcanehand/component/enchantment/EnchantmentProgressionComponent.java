@@ -8,23 +8,24 @@ import net.minecraft.component.type.ItemEnchantmentsComponent;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.Item;
 import net.minecraft.item.tooltip.TooltipAppender;
+import net.minecraft.item.tooltip.TooltipData;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.*;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.entry.RegistryEntryList;
+import net.minecraft.registry.tag.EnchantmentTags;
 import net.minecraft.text.Text;
 
 import java.util.*;
 import java.util.function.Consumer;
 
 public record EnchantmentProgressionComponent(
-        ImmutableMap<RegistryKey<Enchantment>, EnchantmentProgression> enchantments
-)
-        implements TooltipAppender {
+        ImmutableMap<RegistryKey<Enchantment>, EnchantmentProgression> enchantments,
+        int selectedEnchantment
+) implements TooltipAppender, TooltipData {
     public static final EnchantmentProgressionComponent DEFAULT = new EnchantmentProgressionComponent(new HashMap<>());
 
     private static final Codec<RegistryKey<Enchantment>> ENCHANTMENT_CODEC =
@@ -47,19 +48,55 @@ public record EnchantmentProgressionComponent(
     );
 
     public EnchantmentProgressionComponent(Map<RegistryKey<Enchantment>, EnchantmentProgression> enchantments) {
-        this(ImmutableMap.copyOf(enchantments));
+        this(ImmutableMap.copyOf(enchantments), -1);
     }
 
-    @Override
-    public void appendTooltip(
-            Item.TooltipContext context,
-            Consumer<Text> textConsumer,
-            TooltipType type,
-            ComponentsAccess components
+    public static List<Map.Entry<RegistryKey<Enchantment>, EnchantmentProgression>> sortByTooltipOrder(
+            RegistryWrapper.WrapperLookup registries,
+            List<Map.Entry<RegistryKey<Enchantment>, EnchantmentProgression>> entries
     ) {
+        RegistryWrapper.Impl<Enchantment> enchantmentRegistry = registries.getOrThrow(RegistryKeys.ENCHANTMENT);
+        Optional<RegistryEntryList.Named<Enchantment>> optionalOrderList = enchantmentRegistry.getOptional(
+                EnchantmentTags.TOOLTIP_ORDER
+        );
+
+        if (optionalOrderList.isPresent()) {
+            RegistryEntryList<Enchantment> orderList = optionalOrderList.get();
+
+            Map<RegistryKey<Enchantment>, Integer> orderMap = new HashMap<>();
+
+            int index = 0;
+
+            for (RegistryEntry<Enchantment> entry : orderList) {
+                Optional<RegistryKey<Enchantment>> optionalEnchantmentKey = entry.getKey();
+
+                if (optionalEnchantmentKey.isPresent()) {
+                    orderMap.put(optionalEnchantmentKey.get(), ++index);
+                }
+            }
+
+            return entries
+                    .stream()
+                    .sorted(
+                            Comparator.comparingInt(
+                                    entry -> orderMap.getOrDefault(
+                                            entry.getKey(),
+                                            Integer.MAX_VALUE
+                                    )
+                            )
+                    )
+                    .toList();
+        }
+
+        return entries;
     }
 
-    @Override
+    public List<Map.Entry<RegistryKey<Enchantment>, EnchantmentProgression>> getSortedEntries(
+            RegistryWrapper.WrapperLookup registries
+    ) {
+        return sortByTooltipOrder(registries, this.enchantments.entrySet().stream().toList());
+    }
+
     public ImmutableMap<RegistryKey<Enchantment>, EnchantmentProgression> enchantments() {
         return ImmutableMap.copyOf(this.enchantments);
     }
@@ -96,5 +133,14 @@ public record EnchantmentProgressionComponent(
         }
 
         return new EnchantmentProgressionComponent(enchantments);
+    }
+
+    @Override
+    public void appendTooltip(
+            Item.TooltipContext context,
+            Consumer<Text> textConsumer,
+            TooltipType type,
+            ComponentsAccess components
+    ) {
     }
 }

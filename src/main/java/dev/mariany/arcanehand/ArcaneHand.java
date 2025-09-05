@@ -3,6 +3,8 @@ package dev.mariany.arcanehand;
 import dev.mariany.arcanehand.block.AHBlocks;
 import dev.mariany.arcanehand.component.AHComponents;
 import dev.mariany.arcanehand.item.AHItems;
+import dev.mariany.arcanehand.packet.AHPackets;
+import dev.mariany.arcanehand.packet.serverbound.ServerBoundPackets;
 import dev.mariany.arcanehand.screen.AHScreenHandlers;
 import net.fabricmc.api.ModInitializer;
 
@@ -20,9 +22,15 @@ public class ArcaneHand implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        registerPackets();
         AHComponents.bootstrap();
         AHItems.bootstrap();
         AHScreenHandlers.bootstrap();
         AHBlocks.bootstrap();
+    }
+
+    private void registerPackets() {
+        AHPackets.register();
+        ServerBoundPackets.init();
     }
 }
