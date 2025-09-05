@@ -55,4 +55,8 @@ public enum EnchantmentProgressionState implements StringIdentifiable {
     public boolean isEnabled() {
         return this.equals(EnchantmentProgressionState.ENABLED);
     }
+
+    public boolean isUnset() {
+        return this.equals(EnchantmentProgressionState.UNSET);
+    }
 }

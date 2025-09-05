@@ -1,5 +1,6 @@
 package dev.mariany.arcanehand.screen;
 
+import com.google.common.collect.ImmutableMap;
 import dev.mariany.arcanehand.ArcaneHand;
 import dev.mariany.arcanehand.block.AHBlocks;
 import dev.mariany.arcanehand.component.AHComponents;
@@ -10,6 +11,7 @@ import dev.mariany.arcanehand.enchantment.EnchantmentEntry;
 import dev.mariany.arcanehand.item.GauntletItem;
 import dev.mariany.arcanehand.tag.AHTags;
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
@@ -19,6 +21,7 @@ import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
@@ -26,10 +29,7 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class ArcaneConsoleScreenHandler extends ScreenHandler {
     private static final Identifier EMPTY_GAUNTLET_SLOT_TEXTURE =
@@ -78,15 +78,63 @@ public class ArcaneConsoleScreenHandler extends ScreenHandler {
         this.addPlayerSlots(playerInventory, 8, 108);
     }
 
-    public Map<RegistryKey<Enchantment>, EnchantmentProgression> getAvailableEnchantments() {
-        return Map.copyOf(this.availableEnchantments);
+    public void setContentsChangedListener(Runnable contentsChangedListener) {
+        this.contentsChangedListener = contentsChangedListener;
+    }
+
+    public ImmutableMap<RegistryKey<Enchantment>, EnchantmentProgression> getStackEnchantments() {
+        return GauntletItem.getEnchantments(this.inputStack);
+    }
+
+    public boolean isCompatible(RegistryKey<Enchantment> candidate) {
+        Map<RegistryKey<Enchantment>, EnchantmentProgression> existing = new HashMap<>(getStackEnchantments());
+
+        existing.remove(candidate);
+
+        return this.isCompatible(existing, candidate);
+    }
+
+    public boolean isCompatible(
+            Map<RegistryKey<Enchantment>, EnchantmentProgression> existing,
+            RegistryKey<Enchantment> candidate
+    ) {
+        return this.world
+                .getRegistryManager()
+                .getOptional(RegistryKeys.ENCHANTMENT)
+                .map(enchantmentRegistry -> {
+                    List<RegistryEntry<Enchantment>> enchantments = existing
+                            .entrySet()
+                            .stream()
+                            .map(entry ->
+                                         (RegistryEntry<Enchantment>) (entry.getValue().isEnabled() ?
+                                                 enchantmentRegistry
+                                                         .getOptional(entry.getKey())
+                                                         .orElse(null) : null)
+                            )
+                            .filter(Objects::nonNull)
+                            .toList();
+
+                    return enchantmentRegistry
+                            .getOptional(candidate)
+                            .map(enchantment -> EnchantmentHelper.isCompatible(
+                                         enchantments,
+                                         enchantment
+                                 )
+                            )
+                            .orElse(false);
+                })
+                .orElse(false);
     }
 
     public List<Map.Entry<RegistryKey<Enchantment>, EnchantmentProgression>> getSortedAvailableEnchantments() {
-        return EnchantmentProgressionComponent.sortByTooltipOrder(
+        return EnchantmentProgressionComponent.getSortedEntries(
                 this.world.getRegistryManager(),
-                this.getAvailableEnchantments().entrySet().stream().toList()
+                this.getAvailableEnchantments()
         );
+    }
+
+    private Map<RegistryKey<Enchantment>, EnchantmentProgression> getAvailableEnchantments() {
+        return Map.copyOf(this.availableEnchantments);
     }
 
     @Override
@@ -109,11 +157,20 @@ public class ArcaneConsoleScreenHandler extends ScreenHandler {
             Map.Entry<RegistryKey<Enchantment>, EnchantmentProgression> entry =
                     sortedAvailableEnchantments.get(id);
 
-            ItemStack stack = this.inputStack.copy();
-            GauntletItem.applyProgress(player.getRegistryManager(), entry.getKey(), entry.getValue().toggle(), stack);
-            this.inputSlot.setStack(stack);
+            if (this.isCompatible(entry.getKey())) {
+                ItemStack stack = this.inputStack.copy();
 
-            return true;
+                GauntletItem.applyProgress(
+                        player.getRegistryManager(),
+                        entry.getKey(),
+                        entry.getValue().withToggledState(),
+                        stack
+                );
+
+                this.inputSlot.setStack(stack);
+
+                return true;
+            }
         }
 
         return false;
@@ -252,9 +309,5 @@ public class ArcaneConsoleScreenHandler extends ScreenHandler {
         }
 
         return enchantment.isAcceptableItem(stack);
-    }
-
-    public void setContentsChangedListener(Runnable contentsChangedListener) {
-        this.contentsChangedListener = contentsChangedListener;
     }
 }

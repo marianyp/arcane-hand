@@ -28,10 +28,13 @@ public class ArcaneConsoleScreen extends HandledScreen<ArcaneConsoleScreenHandle
 
     private static final Identifier ENABLED = ArcaneHand.id("container/arcane_console/enabled");
     private static final Identifier DISABLED = ArcaneHand.id("container/arcane_console/disabled");
+    private static final Identifier DISABLED_DIMMED = ArcaneHand.id("container/arcane_console/disabled_dimmed");
 
     private static final Identifier OPTION = ArcaneHand.id("container/arcane_console/option");
     private static final Identifier OPTION_HIGHLIGHTED =
             ArcaneHand.id("container/arcane_console/option_highlighted");
+    private static final Identifier OPTION_DISABLED =
+            ArcaneHand.id("container/arcane_console/option_disabled");
 
     private static final Identifier SCROLLER = ArcaneHand.id("container/arcane_console/scroller");
     private static final Identifier SCROLLER_DISABLED =
@@ -40,7 +43,8 @@ public class ArcaneConsoleScreen extends HandledScreen<ArcaneConsoleScreenHandle
     private static final String ELLIPSIS = "...";
 
     private static final int TEXT_COLOR = -9937334;
-    private static final int TEXT_HIGHLIGHTED_COLOR = -128;
+    private static final int TEXT_COLOR_HIGHLIGHTED = -128;
+    private static final int TEXT_COLOR_DISABLED = 0xFF82745C;
 
     private static final int MAX_DISPLAYED_ENCHANTMENTS = 4;
     private static final int OPTION_WIDTH = 107;
@@ -52,8 +56,6 @@ public class ArcaneConsoleScreen extends HandledScreen<ArcaneConsoleScreenHandle
     private static final int SCROLLER_WIDTH = 12;
     private static final int SCROLLER_HEIGHT = 15;
     private static final int SCROLLER_TRACK_HEIGHT = 72;
-    private static final int SCROLLER_RANGE_OFFSET = 2;
-    private static final int SCROLLER_RANGE = SCROLLER_TRACK_HEIGHT - SCROLLER_HEIGHT + SCROLLER_RANGE_OFFSET;
 
     private static final int SCROLLER_TOP_LEFT_X = 156;
     private static final int SCROLLER_TOP_LEFT_Y = 19;
@@ -157,9 +159,13 @@ public class ArcaneConsoleScreen extends HandledScreen<ArcaneConsoleScreenHandle
             int row = i - start;
             int placedY = y + row * OPTION_HEIGHT;
 
-            Identifier texture = isOptionHighlighted(mouseX, mouseY, x, placedY)
-                    ? OPTION_HIGHLIGHTED
-                    : OPTION;
+            Identifier texture = OPTION_DISABLED;
+
+            if (this.handler.isCompatible(availableEnchantments.get(i).getKey())) {
+                texture = isOptionHighlighted(mouseX, mouseY, x, placedY)
+                        ? OPTION_HIGHLIGHTED
+                        : OPTION;
+            }
 
             context.drawGuiTexture(
                     RenderPipelines.GUI_TEXTURED,
@@ -186,7 +192,12 @@ public class ArcaneConsoleScreen extends HandledScreen<ArcaneConsoleScreenHandle
             int row = i - start;
             int placedY = y + row * OPTION_HEIGHT;
 
-            Identifier texture = availableEnchantments.get(i).getValue().isEnabled() ? ENABLED : DISABLED;
+            Identifier texture = DISABLED_DIMMED;
+
+            if (this.handler.isCompatible(availableEnchantments.get(i).getKey())) {
+                texture = availableEnchantments.get(i).getValue().isEnabled() ? ENABLED : DISABLED;
+
+            }
 
             context.drawGuiTexture(
                     RenderPipelines.GUI_TEXTURED,
@@ -228,8 +239,10 @@ public class ArcaneConsoleScreen extends HandledScreen<ArcaneConsoleScreenHandle
                                     OPTION_WIDTH - (ICON_WIDTH + TEXT_LEFT_PADDING) - TEXT_RIGHT_PADDING
                             );
 
+                            RegistryKey<Enchantment> enchantmentKey = availableEnchantments.get(i).getKey();
+
                             enchantmentRegistry
-                                    .getOptional(availableEnchantments.get(i).getKey())
+                                    .getOptional(enchantmentKey)
                                     .ifPresent(enchantment -> {
                                         String raw = enchantment.value().description().getString();
                                         String display = raw;
@@ -247,9 +260,13 @@ public class ArcaneConsoleScreen extends HandledScreen<ArcaneConsoleScreenHandle
                                         int fontHeight = this.textRenderer.fontHeight;
                                         int textY = (optionY + (OPTION_HEIGHT - fontHeight) / 2) + 1;
 
-                                        int color = this.isOptionHighlighted(mouseX, mouseY, optionX, optionY)
-                                                ? TEXT_HIGHLIGHTED_COLOR
-                                                : TEXT_COLOR;
+                                        int color = TEXT_COLOR_DISABLED;
+
+                                        if (this.handler.isCompatible(enchantmentKey)) {
+                                            color = this.isOptionHighlighted(mouseX, mouseY, optionX, optionY)
+                                                    ? TEXT_COLOR_HIGHLIGHTED
+                                                    : TEXT_COLOR;
+                                        }
 
                                         context.drawText(
                                                 this.textRenderer,

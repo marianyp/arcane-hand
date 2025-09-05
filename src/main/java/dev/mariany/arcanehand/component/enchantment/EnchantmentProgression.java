@@ -40,7 +40,11 @@ public record EnchantmentProgression(int level, int earnedExperience, Enchantmen
         return this.state.isEnabled();
     }
 
-    public EnchantmentProgression toggle() {
+    public boolean isUnset() {
+        return this.state.isUnset();
+    }
+
+    public EnchantmentProgression withToggledState() {
         EnchantmentProgressionState newState = this.state.toggle();
 
         if (!newState.isEnabled()) {

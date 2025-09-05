@@ -1,5 +1,7 @@
 package dev.mariany.arcanehand.mixin;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import dev.mariany.arcanehand.AHHelpers;
 import dev.mariany.arcanehand.client.render.entity.feature.GauntletFeatureRenderer;
 import dev.mariany.arcanehand.client.render.entity.state.EntityWithGauntletRenderState;
@@ -33,11 +35,25 @@ public abstract class PlayerEntityRendererMixin
         super(context, entityModel, f);
     }
 
+    @WrapOperation(
+            method = "getArmPose(Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/item/ItemStack;Lnet/minecraft/util/Hand;)Lnet/minecraft/client/render/entity/model/BipedEntityModel$ArmPose;",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isEmpty()Z")
+    )
+    private static boolean wrapGetArmPose(
+            ItemStack stack, Operation<Boolean> original
+    ) {
+        if (AHHelpers.isGauntlet(stack)) {
+            return true;
+        }
+
+        return original.call(stack);
+    }
+
     @Inject(
             method = "updateRenderState(Lnet/minecraft/client/network/AbstractClientPlayerEntity;Lnet/minecraft/client/render/entity/state/PlayerEntityRenderState;F)V",
             at = @At(value = "TAIL")
     )
-    public void updateRenderState(
+    public void injectUpdateRenderState(
             AbstractClientPlayerEntity player,
             PlayerEntityRenderState playerEntityRenderState,
             float delta,

@@ -2,8 +2,6 @@ package dev.mariany.arcanehand.client.gui.tooltip;
 
 import dev.mariany.arcanehand.component.AHComponents;
 import dev.mariany.arcanehand.item.GauntletItem;
-import dev.mariany.arcanehand.packet.serverbound.EnchantmentSelectedPayload;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.gui.tooltip.TooltipSubmenuHandler;
 import net.minecraft.client.input.Scroller;
 import net.minecraft.item.ItemStack;
@@ -59,13 +57,13 @@ public class EnchantmentProgressionTooltipSubmenuHandler implements TooltipSubme
     }
 
     public void reset(ItemStack item, int slotId) {
-        this.sendPacket(item, slotId, -1);
+        this.sendPacket(item, slotId, 0);
     }
 
     private void sendPacket(ItemStack stack, int slotId, int selectedEnchantmentIndex) {
         if (selectedEnchantmentIndex < GauntletItem.getEnchantmentCount(stack)) {
-            ClientPlayNetworking.send(new EnchantmentSelectedPayload(slotId, selectedEnchantmentIndex));
             GauntletItem.setSelectedEnchantmentIndex(stack, selectedEnchantmentIndex);
+            // ClientPlayNetworking.send(new EnchantmentSelectedPayload(slotId, selectedEnchantmentIndex));
         }
     }
 }

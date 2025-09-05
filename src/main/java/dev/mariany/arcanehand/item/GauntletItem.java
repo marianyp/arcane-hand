@@ -1,5 +1,6 @@
 package dev.mariany.arcanehand.item;
 
+import com.google.common.collect.ImmutableMap;
 import dev.mariany.arcanehand.AHHelpers;
 import dev.mariany.arcanehand.component.AHComponents;
 import dev.mariany.arcanehand.component.enchantment.EnchantmentProgression;
@@ -39,14 +40,19 @@ public class GauntletItem extends Item {
         return false;
     }
 
+    public static ImmutableMap<RegistryKey<Enchantment>, EnchantmentProgression> getEnchantments(ItemStack stack) {
+        return stack
+                .getOrDefault(AHComponents.ENCHANTMENT_PROGRESSION, EnchantmentProgressionComponent.DEFAULT)
+                .enchantments();
+    }
+
     public static int getEnchantmentCount(ItemStack stack) {
         return Math.toIntExact(
-                stack.getOrDefault(AHComponents.ENCHANTMENT_PROGRESSION, EnchantmentProgressionComponent.DEFAULT)
-                     .enchantments()
-                     .values()
-                     .stream()
-                     .filter(EnchantmentProgression::isEnabled)
-                     .count()
+                getEnchantments(stack)
+                        .values()
+                        .stream()
+                        .filter(EnchantmentProgression::isEnabled)
+                        .count()
         );
     }
 

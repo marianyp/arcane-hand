@@ -17,7 +17,12 @@ import net.minecraft.registry.*;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.registry.tag.EnchantmentTags;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.text.Texts;
+import net.minecraft.util.Formatting;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -48,14 +53,14 @@ public record EnchantmentProgressionComponent(
     );
 
     public EnchantmentProgressionComponent(Map<RegistryKey<Enchantment>, EnchantmentProgression> enchantments) {
-        this(ImmutableMap.copyOf(enchantments), -1);
+        this(ImmutableMap.copyOf(enchantments), 0);
     }
 
     public static List<Map.Entry<RegistryKey<Enchantment>, EnchantmentProgression>> sortByTooltipOrder(
-            RegistryWrapper.WrapperLookup registries,
-            List<Map.Entry<RegistryKey<Enchantment>, EnchantmentProgression>> entries
+            RegistryWrapper.Impl<Enchantment> enchantmentRegistry,
+            List<Map.Entry<RegistryKey<Enchantment>, EnchantmentProgression>> entries,
+            boolean groupByProgression
     ) {
-        RegistryWrapper.Impl<Enchantment> enchantmentRegistry = registries.getOrThrow(RegistryKeys.ENCHANTMENT);
         Optional<RegistryEntryList.Named<Enchantment>> optionalOrderList = enchantmentRegistry.getOptional(
                 EnchantmentTags.TOOLTIP_ORDER
         );
@@ -75,30 +80,63 @@ public record EnchantmentProgressionComponent(
                 }
             }
 
-            return entries
-                    .stream()
-                    .sorted(
-                            Comparator.comparingInt(
-                                    entry -> orderMap.getOrDefault(
-                                            entry.getKey(),
-                                            Integer.MAX_VALUE
-                                    )
-                            )
-                    )
-                    .toList();
+            Comparator<Map.Entry<RegistryKey<Enchantment>, EnchantmentProgression>> comparator = getEntryComparator(
+                    orderMap,
+                    groupByProgression
+            );
+
+            return entries.stream().sorted(comparator).toList();
         }
 
         return entries;
     }
 
-    public List<Map.Entry<RegistryKey<Enchantment>, EnchantmentProgression>> getSortedEntries(
-            RegistryWrapper.WrapperLookup registries
+    private static @NotNull Comparator<Map.Entry<RegistryKey<Enchantment>, EnchantmentProgression>> getEntryComparator(
+            Map<RegistryKey<Enchantment>, Integer> orderMap,
+            boolean groupByProgression
     ) {
-        return sortByTooltipOrder(registries, this.enchantments.entrySet().stream().toList());
+        Comparator<Map.Entry<RegistryKey<Enchantment>, EnchantmentProgression>> comparator = Comparator.comparingInt(
+                e -> orderMap.getOrDefault(e.getKey(), Integer.MAX_VALUE)
+        );
+
+        if (groupByProgression) {
+            comparator = Comparator
+                    .comparingInt(
+                            (Map.Entry<RegistryKey<Enchantment>, EnchantmentProgression> entry) ->
+                                    entry.getValue().level() > 0 ? 0 : 1
+                    )
+                    .thenComparingInt(
+                            entry -> orderMap.getOrDefault(
+                                    entry.getKey(),
+                                    Integer.MAX_VALUE
+                            )
+                    );
+        }
+
+        return comparator;
     }
 
-    public ImmutableMap<RegistryKey<Enchantment>, EnchantmentProgression> enchantments() {
-        return ImmutableMap.copyOf(this.enchantments);
+    public static List<Map.Entry<RegistryKey<Enchantment>, EnchantmentProgression>> getSortedEntries(
+            RegistryWrapper.WrapperLookup registries,
+            Map<RegistryKey<Enchantment>, EnchantmentProgression> enchantments
+    ) {
+        return getSortedEntries(registries, enchantments, false);
+    }
+
+    public static List<Map.Entry<RegistryKey<Enchantment>, EnchantmentProgression>> getSortedEntries(
+            RegistryWrapper.WrapperLookup registries,
+            Map<RegistryKey<Enchantment>, EnchantmentProgression> enchantments,
+            boolean groupByCompletion
+    ) {
+        return registries.getOptional(RegistryKeys.ENCHANTMENT)
+                         .map(
+                                 enchantmentRegistry -> sortByTooltipOrder(
+                                         enchantmentRegistry,
+                                         enchantments.entrySet().stream().toList(),
+                                         groupByCompletion
+                                 )
+                         )
+                         .orElse(List.of());
     }
 
     public boolean isEmpty() {
@@ -124,13 +162,10 @@ public record EnchantmentProgressionComponent(
     }
 
     public EnchantmentProgressionComponent excludingUnset() {
-        Map<RegistryKey<Enchantment>, EnchantmentProgression> enchantments = new HashMap<>(this.enchantments);
+        Map<RegistryKey<Enchantment>, EnchantmentProgression> enchantments =
+                new HashMap<>(this.enchantments);
 
-        for (Map.Entry<RegistryKey<Enchantment>, EnchantmentProgression> entry : enchantments.entrySet()) {
-            if (entry.getValue().state().equals(EnchantmentProgressionState.UNSET)) {
-                enchantments.remove(entry.getKey());
-            }
-        }
+        enchantments.entrySet().removeIf(entry -> entry.getValue().isUnset());
 
         return new EnchantmentProgressionComponent(enchantments);
     }
@@ -142,5 +177,53 @@ public record EnchantmentProgressionComponent(
             TooltipType type,
             ComponentsAccess components
     ) {
+        RegistryWrapper.WrapperLookup wrapperLookup = context.getRegistryLookup();
+
+        if (wrapperLookup != null) {
+            wrapperLookup
+                    .getOptional(RegistryKeys.ENCHANTMENT)
+                    .ifPresent(enchantmentRegistry -> {
+                        List<Map.Entry<RegistryKey<Enchantment>, EnchantmentProgression>> entries = sortByTooltipOrder(
+                                enchantmentRegistry,
+                                this.enchantments.entrySet().stream().toList(),
+                                true
+                        ).stream()
+                         .filter(entry -> entry.getValue().isEnabled())
+                         .toList();
+
+                        int enchantCount = entries.size();
+
+                        for (int i = 0; i < enchantCount; i++) {
+                            Map.Entry<RegistryKey<Enchantment>, EnchantmentProgression> entry = entries.get(i);
+                            RegistryKey<Enchantment> enchantmentKey = entry.getKey();
+                            EnchantmentProgression progress = entry.getValue();
+
+                            boolean isSelected = this.selectedEnchantment == i && enchantCount > 1;
+                            boolean isAppliedEnchantment = progress.level() > 0;
+
+                            Optional<RegistryEntry.Reference<Enchantment>> optionalEnchantment =
+                                    enchantmentRegistry.getOptional(enchantmentKey);
+
+                            if (optionalEnchantment.isPresent()) {
+                                RegistryEntry.Reference<Enchantment> enchantment = optionalEnchantment.get();
+
+                                int level = progress.level();
+                                MutableText name;
+
+                                if (level > 0) {
+                                    name = Enchantment.getName(enchantment, level).copy();
+                                } else {
+                                    name = enchantment.value().description().copy();
+                                }
+
+                                Formatting color = isAppliedEnchantment ? Formatting.GRAY : Formatting.DARK_GRAY;
+
+                                Texts.setStyleIfAbsent(name, Style.EMPTY.withColor(color).withBold(isSelected));
+
+                                textConsumer.accept(name);
+                            }
+                        }
+                    });
+        }
     }
 }
