@@ -24,6 +24,7 @@ public class AHBlocks {
                                   .instrument(NoteBlockInstrument.BASEDRUM)
                                   .requiresTool()
                                   .strength(5, 6)
+                                  .luminance(state -> 6)
     );
 
     private static Block register(

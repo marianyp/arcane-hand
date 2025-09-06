@@ -1,8 +1,6 @@
 {
-  "parent": "minecraft:block/cube_bottom_top",
+  "parent": "minecraft:block/cube_all",
   "textures": {
-    "bottom": "arcanehand:block/arcane_console_bottom",
-    "side": "arcanehand:block/arcane_console_side",
-    "top": "arcanehand:block/arcane_console_top"
+    "all": "arcanehand:block/arcane_console"
   }
 }

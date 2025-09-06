@@ -6,7 +6,6 @@ import net.fabricmc.fabric.api.client.datagen.v1.provider.FabricModelProvider;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.minecraft.client.data.BlockStateModelGenerator;
 import net.minecraft.client.data.ItemModelGenerator;
-import net.minecraft.client.data.TexturedModel;
 
 public class AHModelProvider extends FabricModelProvider {
     public AHModelProvider(FabricDataOutput output) {
@@ -15,7 +14,7 @@ public class AHModelProvider extends FabricModelProvider {
 
     @Override
     public void generateBlockStateModels(BlockStateModelGenerator blockStateModelGenerator) {
-        blockStateModelGenerator.registerSingleton(AHBlocks.ARCANE_CONSOLE, TexturedModel.CUBE_BOTTOM_TOP);
+        blockStateModelGenerator.registerSimpleCubeAll(AHBlocks.ARCANE_CONSOLE);
     }
 
     @Override
