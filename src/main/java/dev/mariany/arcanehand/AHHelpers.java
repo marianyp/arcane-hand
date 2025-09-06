@@ -1,11 +1,19 @@
 package dev.mariany.arcanehand;
 
+import dev.mariany.arcanehand.component.enchantment.EnchantmentProgression;
 import dev.mariany.arcanehand.item.GauntletItem;
 import net.minecraft.component.type.DyedColorComponent;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemDisplayContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Style;
+import net.minecraft.text.Text;
+import net.minecraft.text.Texts;
 import net.minecraft.util.Arm;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 
 public class AHHelpers {
@@ -47,5 +55,32 @@ public class AHHelpers {
 
     public static boolean pointInRect(double pointX, double pointY, int x, int y, int width, int height) {
         return pointX >= x && pointY >= y && pointX < x + width && pointY < y + height;
+    }
+
+    public static Text getEnchantmentText(RegistryEntry<Enchantment> enchantment, EnchantmentProgression progress) {
+        return getEnchantmentText(enchantment, progress, false);
+    }
+    
+    public static Text getEnchantmentText(
+            RegistryEntry<Enchantment> enchantment,
+            EnchantmentProgression progress,
+            boolean bold
+    ) {
+        int level = progress.level();
+        boolean isAppliedEnchantment = progress.level() > 0;
+
+        MutableText name;
+
+        if (level > 0) {
+            name = Enchantment.getName(enchantment, level).copy();
+        } else {
+            name = enchantment.value().description().copy();
+        }
+
+        Formatting color = isAppliedEnchantment ? Formatting.GRAY : Formatting.DARK_GRAY;
+
+        Texts.setStyleIfAbsent(name, Style.EMPTY.withColor(color).withBold(bold));
+
+        return name;
     }
 }

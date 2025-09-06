@@ -19,6 +19,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -83,10 +84,58 @@ public class ArcaneConsoleScreen extends HandledScreen<ArcaneConsoleScreenHandle
         }
     }
 
+    public int getOptionsX() {
+        return this.x + OPTIONS_TOP_LEFT_X;
+    }
+
+    public int getOptionsY() {
+        return this.y + OPTIONS_TOP_LEFT_Y;
+    }
+
+    public int getEndIndexExclusive() {
+        return this.scrollOffset + MAX_DISPLAYED_ENCHANTMENTS;
+    }
+
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
         super.render(context, mouseX, mouseY, deltaTicks);
         this.drawMouseoverTooltip(context, mouseX, mouseY);
+        this.drawEnchantmentTooltip(context, mouseX, mouseY);
+    }
+
+    private void drawEnchantmentTooltip(DrawContext context, int mouseX, int mouseY) {
+        if (this.client != null && this.client.world != null) {
+            this.client.world
+                    .getRegistryManager()
+                    .getOptional(RegistryKeys.ENCHANTMENT)
+                    .ifPresent(enchantmentRegistry -> {
+                        final List<Map.Entry<RegistryKey<Enchantment>, EnchantmentProgression>> enchantments =
+                                this.handler.getSortedAvailableEnchantments();
+                        final int start = this.scrollOffset;
+                        final int end = Math.min(this.getEndIndexExclusive(), enchantments.size());
+
+                        for (int i = start; i < end; i++) {
+                            int row = i - start;
+                            int placedY = this.getOptionsY() + row * OPTION_HEIGHT;
+
+                            if (isOptionHighlighted(mouseX, mouseY, this.getOptionsX(), placedY)) {
+                                EnchantmentProgression progress = enchantments.get(i).getValue();
+                                List<Text> tooltips = new ArrayList<>();
+
+                                enchantmentRegistry
+                                        .getOptional(enchantments.get(i).getKey())
+                                        .ifPresent(enchantment -> tooltips.add(
+                                                AHHelpers.getEnchantmentText(enchantment, progress)
+                                        ));
+
+                                if (!tooltips.isEmpty()) {
+                                    context.drawTooltip(this.textRenderer, tooltips, mouseX, mouseY);
+                                    break;
+                                }
+                            }
+                        }
+                    });
+        }
     }
 
     @Override
@@ -108,15 +157,7 @@ public class ArcaneConsoleScreen extends HandledScreen<ArcaneConsoleScreenHandle
         );
 
         this.renderScroller(context, this.x + 156, this.y + 19);
-
-        this.renderOptions(
-                context,
-                mouseX,
-                mouseY,
-                this.x + OPTIONS_TOP_LEFT_X,
-                this.y + OPTIONS_TOP_LEFT_Y,
-                this.scrollOffset + MAX_DISPLAYED_ENCHANTMENTS
-        );
+        this.renderOptions(context, mouseX, mouseY);
     }
 
     private void renderScroller(DrawContext context, int x, int y) {
@@ -132,30 +173,28 @@ public class ArcaneConsoleScreen extends HandledScreen<ArcaneConsoleScreenHandle
         );
     }
 
-    private void renderOptions(DrawContext context, int mouseX, int mouseY, int x, int y, int endIndexExclusive) {
+    private void renderOptions(DrawContext context, int mouseX, int mouseY) {
         List<Map.Entry<RegistryKey<Enchantment>, EnchantmentProgression>> availableEnchantments =
                 this.handler.getSortedAvailableEnchantments();
 
-        this.renderOptionsBackground(context, availableEnchantments, mouseX, mouseY, x, y, endIndexExclusive);
-        this.renderOptionsIcon(context, availableEnchantments, x, y, endIndexExclusive);
-        this.renderOptionsText(context, availableEnchantments, mouseX, mouseY, x, y, endIndexExclusive);
+        this.renderOptionsBackground(context, availableEnchantments, mouseX, mouseY);
+        this.renderOptionsIcon(context, availableEnchantments);
+        this.renderOptionsText(context, availableEnchantments, mouseX, mouseY);
     }
 
     private void renderOptionsBackground(
             DrawContext context,
             List<Map.Entry<RegistryKey<Enchantment>, EnchantmentProgression>> availableEnchantments,
             int mouseX,
-            int mouseY,
-            int x,
-            int y,
-            int endIndexExclusive
+            int mouseY
     ) {
+        final int x = this.getOptionsX();
         final int start = this.scrollOffset;
-        final int end = Math.min(endIndexExclusive, availableEnchantments.size());
+        final int end = Math.min(this.getEndIndexExclusive(), availableEnchantments.size());
 
         for (int i = start; i < end; i++) {
             int row = i - start;
-            int placedY = y + row * OPTION_HEIGHT;
+            int placedY = this.getOptionsY() + row * OPTION_HEIGHT;
 
             Identifier texture = OPTION_DISABLED;
 
@@ -178,24 +217,21 @@ public class ArcaneConsoleScreen extends HandledScreen<ArcaneConsoleScreenHandle
 
     private void renderOptionsIcon(
             DrawContext context,
-            List<Map.Entry<RegistryKey<Enchantment>, EnchantmentProgression>> availableEnchantments,
-            int x,
-            int y,
-            int endIndexExclusive
+            List<Map.Entry<RegistryKey<Enchantment>, EnchantmentProgression>> availableEnchantments
     ) {
         final int start = this.scrollOffset;
-        final int end = Math.min(endIndexExclusive, availableEnchantments.size());
+        final int end = Math.min(this.getEndIndexExclusive(), availableEnchantments.size());
 
         for (int i = start; i < end; i++) {
             int row = i - start;
-            int placedY = y + row * OPTION_HEIGHT;
+            int placedY = this.getOptionsY() + row * OPTION_HEIGHT;
 
             if (this.handler.isCompatible(availableEnchantments.get(i).getKey())) {
-                if(availableEnchantments.get(i).getValue().isEnabled()) {
+                if (availableEnchantments.get(i).getValue().isEnabled()) {
                     context.drawGuiTexture(
                             RenderPipelines.GUI_TEXTURED,
                             ENABLED,
-                            x,
+                            this.getOptionsX(),
                             placedY,
                             ICON_WIDTH,
                             ICON_HEIGHT
@@ -209,10 +245,7 @@ public class ArcaneConsoleScreen extends HandledScreen<ArcaneConsoleScreenHandle
             DrawContext context,
             List<Map.Entry<RegistryKey<Enchantment>, EnchantmentProgression>> availableEnchantments,
             int mouseX,
-            int mouseY,
-            int x,
-            int y,
-            int endIndexExclusive
+            int mouseY
     ) {
         if (this.client != null && this.client.world != null) {
             this.client.world
@@ -220,13 +253,13 @@ public class ArcaneConsoleScreen extends HandledScreen<ArcaneConsoleScreenHandle
                     .getOptional(RegistryKeys.ENCHANTMENT)
                     .ifPresent(enchantmentRegistry -> {
                         final int start = this.scrollOffset;
-                        final int end = Math.min(endIndexExclusive, availableEnchantments.size());
+                        final int end = Math.min(this.getEndIndexExclusive(), availableEnchantments.size());
 
                         for (int i = start; i < end; i++) {
                             final int row = i - start;
 
-                            final int optionX = x;
-                            final int optionY = y + row * OPTION_HEIGHT;
+                            final int optionX = this.getOptionsX();
+                            final int optionY = this.getOptionsY() + row * OPTION_HEIGHT;
 
                             final int textX = optionX + ICON_WIDTH + TEXT_LEFT_PADDING;
                             final int textMaxWidth = Math.max(

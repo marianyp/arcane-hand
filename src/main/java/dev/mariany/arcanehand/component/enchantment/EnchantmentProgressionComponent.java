@@ -19,11 +19,7 @@ import net.minecraft.registry.*;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.registry.tag.EnchantmentTags;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Style;
 import net.minecraft.text.Text;
-import net.minecraft.text.Texts;
-import net.minecraft.util.Formatting;
 import org.apache.commons.lang3.math.Fraction;
 import org.jetbrains.annotations.NotNull;
 
@@ -267,29 +263,16 @@ public record EnchantmentProgressionComponent(
                             EnchantmentProgression progress = entry.getValue();
 
                             boolean isSelected = this.selectedEnchantment == i && enchantCount > 1;
-                            boolean isAppliedEnchantment = progress.level() > 0;
 
-                            Optional<RegistryEntry.Reference<Enchantment>> optionalEnchantment =
-                                    enchantmentRegistry.getOptional(enchantmentKey);
-
-                            if (optionalEnchantment.isPresent()) {
-                                RegistryEntry.Reference<Enchantment> enchantment = optionalEnchantment.get();
-
-                                int level = progress.level();
-                                MutableText name;
-
-                                if (level > 0) {
-                                    name = Enchantment.getName(enchantment, level).copy();
-                                } else {
-                                    name = enchantment.value().description().copy();
-                                }
-
-                                Formatting color = isAppliedEnchantment ? Formatting.GRAY : Formatting.DARK_GRAY;
-
-                                Texts.setStyleIfAbsent(name, Style.EMPTY.withColor(color).withBold(isSelected));
-
-                                textConsumer.accept(name);
-                            }
+                            enchantmentRegistry
+                                    .getOptional(enchantmentKey)
+                                    .ifPresent(enchantment -> textConsumer.accept(
+                                            AHHelpers.getEnchantmentText(
+                                                    enchantment,
+                                                    progress,
+                                                    isSelected
+                                            )
+                                    ));
                         }
                     });
         }
