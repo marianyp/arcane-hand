@@ -2,6 +2,8 @@ package dev.mariany.arcanehand.client.gui.tooltip;
 
 import dev.mariany.arcanehand.component.AHComponents;
 import dev.mariany.arcanehand.item.GauntletItem;
+import dev.mariany.arcanehand.packet.serverbound.EnchantmentSelectedPayload;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.gui.tooltip.TooltipSubmenuHandler;
 import net.minecraft.client.input.Scroller;
 import net.minecraft.item.ItemStack;
@@ -37,7 +39,7 @@ public class EnchantmentProgressionTooltipSubmenuHandler implements TooltipSubme
             );
 
             if (previousEnchantmentIndex != selectedEnchantmentIndex) {
-                this.update(item, selectedEnchantmentIndex);
+                this.update(item, slotId, selectedEnchantmentIndex);
             }
         }
 
@@ -46,23 +48,24 @@ public class EnchantmentProgressionTooltipSubmenuHandler implements TooltipSubme
 
     @Override
     public void reset(Slot slot) {
-        this.reset(slot.getStack());
+        this.reset(slot.getStack(), slot.id);
     }
 
     @Override
     public void onMouseClick(Slot slot, SlotActionType actionType) {
         if (actionType == SlotActionType.QUICK_MOVE || actionType == SlotActionType.SWAP) {
-            this.reset(slot.getStack());
+            this.reset(slot.getStack(), slot.id);
         }
     }
 
-    public void reset(ItemStack stack) {
-        this.update(stack, 0);
+    public void reset(ItemStack stack, int slotId) {
+        this.update(stack, slotId, 0);
     }
 
-    private void update(ItemStack stack, int selectedEnchantmentIndex) {
+    private void update(ItemStack stack, int slotId, int selectedEnchantmentIndex) {
         if (selectedEnchantmentIndex < GauntletItem.getEnchantmentCount(stack)) {
             GauntletItem.setSelectedEnchantmentIndex(stack, selectedEnchantmentIndex);
+            ClientPlayNetworking.send(new EnchantmentSelectedPayload(slotId, selectedEnchantmentIndex));
         }
     }
 }

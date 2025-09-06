@@ -2,6 +2,8 @@ package dev.mariany.arcanehand.component.enchantment;
 
 import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import dev.mariany.arcanehand.AHHelpers;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.component.ComponentsAccess;
 import net.minecraft.component.type.ItemEnchantmentsComponent;
@@ -22,6 +24,7 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
 import net.minecraft.util.Formatting;
+import org.apache.commons.lang3.math.Fraction;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -31,7 +34,10 @@ public record EnchantmentProgressionComponent(
         ImmutableMap<RegistryKey<Enchantment>, EnchantmentProgression> enchantments,
         int selectedEnchantment
 ) implements TooltipAppender, TooltipData {
-    public static final EnchantmentProgressionComponent DEFAULT = new EnchantmentProgressionComponent(new HashMap<>());
+    public static final EnchantmentProgressionComponent DEFAULT = new EnchantmentProgressionComponent(
+            new HashMap<>(),
+            0
+    );
 
     private static final Codec<RegistryKey<Enchantment>> ENCHANTMENT_CODEC =
             RegistryKey.createCodec(RegistryKeys.ENCHANTMENT);
@@ -40,20 +46,34 @@ public record EnchantmentProgressionComponent(
             RegistryKey.createPacketCodec(RegistryKeys.ENCHANTMENT);
 
     public static final Codec<EnchantmentProgressionComponent> CODEC =
-            Codec.unboundedMap(ENCHANTMENT_CODEC, EnchantmentProgression.CODEC)
-                 .xmap(
-                         map -> new EnchantmentProgressionComponent(new HashMap<>(map)),
-                         progress -> progress.enchantments
-                 );
+            RecordCodecBuilder.create(
+                    instance ->
+                            instance.group(
+                                            Codec.unboundedMap(
+                                                         ENCHANTMENT_CODEC,
+                                                         EnchantmentProgression.CODEC
+                                                 )
+                                                 .fieldOf("enchantments")
+                                                 .forGetter(EnchantmentProgressionComponent::enchantments),
+                                            Codec.INT.optionalFieldOf("selected_enchantment", 0)
+                                                     .forGetter(EnchantmentProgressionComponent::selectedEnchantment)
+                                    )
+                                    .apply(instance, EnchantmentProgressionComponent::new)
+            );
 
     public static final PacketCodec<RegistryByteBuf, EnchantmentProgressionComponent> PACKET_CODEC = PacketCodec.tuple(
             PacketCodecs.map(HashMap::new, ENCHANTMENT_PACKET_CODEC, EnchantmentProgression.PACKET_CODEC),
-            component -> component.enchantments,
+            EnchantmentProgressionComponent::enchantments,
+            PacketCodecs.INTEGER,
+            EnchantmentProgressionComponent::selectedEnchantment,
             EnchantmentProgressionComponent::new
     );
 
-    public EnchantmentProgressionComponent(Map<RegistryKey<Enchantment>, EnchantmentProgression> enchantments) {
-        this(ImmutableMap.copyOf(enchantments), 0);
+    public EnchantmentProgressionComponent(
+            Map<RegistryKey<Enchantment>, EnchantmentProgression> enchantments,
+            int selectedEnchantment
+    ) {
+        this(ImmutableMap.copyOf(enchantments), selectedEnchantment);
     }
 
     public static List<Map.Entry<RegistryKey<Enchantment>, EnchantmentProgression>> sortByTooltipOrder(
@@ -167,7 +187,55 @@ public record EnchantmentProgressionComponent(
 
         enchantments.entrySet().removeIf(entry -> entry.getValue().isUnset());
 
-        return new EnchantmentProgressionComponent(enchantments);
+        return new EnchantmentProgressionComponent(enchantments, this.selectedEnchantment);
+    }
+
+    public Fraction getSelectedProgress(DynamicRegistryManager registryManager) {
+        return registryManager
+                .getOptional(RegistryKeys.ENCHANTMENT)
+                .flatMap(enchantmentRegistry -> {
+                    List<Map.Entry<RegistryKey<Enchantment>, EnchantmentProgression>> entries =
+                            EnchantmentProgressionComponent
+                                    .sortByTooltipOrder(
+                                            enchantmentRegistry,
+                                            this.enchantments.entrySet().stream().toList(),
+                                            true
+                                    )
+                                    .stream()
+                                    .filter(
+                                            entry ->
+                                                    entry.getValue()
+                                                         .isEnabled()
+                                    )
+                                    .toList();
+
+                    return Optional
+                            .of(entries)
+                            .filter(enchantments -> this.selectedEnchantment < enchantments.size())
+                            .map(enchantments -> enchantments.get(this.selectedEnchantment))
+                            .flatMap(
+                                    entry -> enchantmentRegistry
+                                            .getOptional(entry.getKey())
+                                            .map(enchantment -> getProgressFraction(
+                                                         entry.getValue(),
+                                                         enchantment.value()
+                                                 )
+                                            )
+                            );
+                })
+                .orElse(Fraction.ZERO);
+    }
+
+    private Fraction getProgressFraction(EnchantmentProgression progression, Enchantment enchantment) {
+        if (progression.level() >= enchantment.definition().maxLevel()) {
+            return Fraction.ONE;
+        }
+
+        int minimumCost = enchantment.definition().minCost().forLevel(progression.level() + 1);
+        int neededExperience = AHHelpers.convertLevelsToExperience(minimumCost);
+        int earnedExperience = progression.earnedExperience();
+
+        return Fraction.getFraction(earnedExperience, neededExperience);
     }
 
     @Override

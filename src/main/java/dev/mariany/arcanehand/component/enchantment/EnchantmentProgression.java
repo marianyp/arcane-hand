@@ -9,21 +9,19 @@ import net.minecraft.network.codec.PacketCodecs;
 public record EnchantmentProgression(int level, int earnedExperience, EnchantmentProgressionState state) {
     public static final Codec<EnchantmentProgression> CODEC =
             RecordCodecBuilder.create(
-                    instance -> instance.group(
-                                                Codec.INT
-                                                        .fieldOf("level")
-                                                        .forGetter(EnchantmentProgression::level),
-                                                Codec.INT
-                                                        .fieldOf("earned_experience")
-                                                        .forGetter(EnchantmentProgression::earnedExperience),
-                                                EnchantmentProgressionState.CODEC
-                                                        .fieldOf("state")
-                                                        .forGetter(EnchantmentProgression::state)
-                                        )
-                                        .apply(
-                                                instance,
-                                                EnchantmentProgression::new
-                                        )
+                    instance ->
+                            instance.group(
+                                            Codec.INT
+                                                    .fieldOf("level")
+                                                    .forGetter(EnchantmentProgression::level),
+                                            Codec.INT
+                                                    .fieldOf("earned_experience")
+                                                    .forGetter(EnchantmentProgression::earnedExperience),
+                                            EnchantmentProgressionState.CODEC
+                                                    .fieldOf("state")
+                                                    .forGetter(EnchantmentProgression::state)
+                                    )
+                                    .apply(instance, EnchantmentProgression::new)
             );
 
     public static final PacketCodec<RegistryByteBuf, EnchantmentProgression> PACKET_CODEC = PacketCodec.tuple(

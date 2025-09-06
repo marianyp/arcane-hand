@@ -7,9 +7,11 @@ import dev.mariany.arcanehand.component.enchantment.EnchantmentProgression;
 import dev.mariany.arcanehand.component.enchantment.EnchantmentProgressionComponent;
 import dev.mariany.arcanehand.component.enchantment.EnchantmentProgressionState;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.TooltipDisplayComponent;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.tooltip.TooltipData;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
@@ -38,6 +40,18 @@ public class GauntletItem extends Item {
     @Override
     public boolean hasGlint(ItemStack stack) {
         return false;
+    }
+
+    @Override
+    public Optional<TooltipData> getTooltipData(ItemStack stack) {
+        TooltipDisplayComponent tooltipDisplayComponent = stack.getOrDefault(
+                DataComponentTypes.TOOLTIP_DISPLAY,
+                TooltipDisplayComponent.DEFAULT
+        );
+
+        return tooltipDisplayComponent.shouldDisplay(AHComponents.ENCHANTMENT_PROGRESSION)
+                ? Optional.ofNullable(stack.get(AHComponents.ENCHANTMENT_PROGRESSION))
+                : Optional.empty();
     }
 
     public static ImmutableMap<RegistryKey<Enchantment>, EnchantmentProgression> getEnchantments(ItemStack stack) {
@@ -110,8 +124,15 @@ public class GauntletItem extends Item {
             Map<RegistryKey<Enchantment>, EnchantmentProgression> progression,
             ItemStack stack
     ) {
-        EnchantmentProgressionComponent progressionComponent =
-                new EnchantmentProgressionComponent(progression).excludingUnset();
+        EnchantmentProgressionComponent enchantmentProgressionComponent = stack.getOrDefault(
+                AHComponents.ENCHANTMENT_PROGRESSION,
+                EnchantmentProgressionComponent.DEFAULT
+        );
+
+        EnchantmentProgressionComponent progressionComponent = new EnchantmentProgressionComponent(
+                progression,
+                enchantmentProgressionComponent.selectedEnchantment()
+        ).excludingUnset();
 
         stack.set(AHComponents.ENCHANTMENT_PROGRESSION, progressionComponent);
         stack.set(DataComponentTypes.ENCHANTMENTS, progressionComponent.toEnchantments(dynamicRegistryManager));

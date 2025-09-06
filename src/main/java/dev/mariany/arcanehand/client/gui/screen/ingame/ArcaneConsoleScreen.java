@@ -27,8 +27,6 @@ public class ArcaneConsoleScreen extends HandledScreen<ArcaneConsoleScreenHandle
     private static final Identifier BACKGROUND = ArcaneHand.id("textures/gui/container/arcane_console.png");
 
     private static final Identifier ENABLED = ArcaneHand.id("container/arcane_console/enabled");
-    private static final Identifier DISABLED = ArcaneHand.id("container/arcane_console/disabled");
-    private static final Identifier DISABLED_DIMMED = ArcaneHand.id("container/arcane_console/disabled_dimmed");
 
     private static final Identifier OPTION = ArcaneHand.id("container/arcane_console/option");
     private static final Identifier OPTION_HIGHLIGHTED =
@@ -192,21 +190,18 @@ public class ArcaneConsoleScreen extends HandledScreen<ArcaneConsoleScreenHandle
             int row = i - start;
             int placedY = y + row * OPTION_HEIGHT;
 
-            Identifier texture = DISABLED_DIMMED;
-
             if (this.handler.isCompatible(availableEnchantments.get(i).getKey())) {
-                texture = availableEnchantments.get(i).getValue().isEnabled() ? ENABLED : DISABLED;
-
+                if(availableEnchantments.get(i).getValue().isEnabled()) {
+                    context.drawGuiTexture(
+                            RenderPipelines.GUI_TEXTURED,
+                            ENABLED,
+                            x,
+                            placedY,
+                            ICON_WIDTH,
+                            ICON_HEIGHT
+                    );
+                }
             }
-
-            context.drawGuiTexture(
-                    RenderPipelines.GUI_TEXTURED,
-                    texture,
-                    x,
-                    placedY,
-                    ICON_WIDTH,
-                    ICON_HEIGHT
-            );
         }
     }
 
