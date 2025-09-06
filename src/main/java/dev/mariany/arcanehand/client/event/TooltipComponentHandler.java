@@ -16,7 +16,7 @@ public class TooltipComponentHandler {
 
     private static TooltipComponent getComponent(TooltipData tooltipData) {
         if (tooltipData instanceof EnchantmentProgressionComponent enchantmentProgression) {
-            return new EnchantmentProgressionTooltipComponent(enchantmentProgression);
+            return new EnchantmentProgressionTooltipComponent(enchantmentProgression, true);
         }
 
         return null;

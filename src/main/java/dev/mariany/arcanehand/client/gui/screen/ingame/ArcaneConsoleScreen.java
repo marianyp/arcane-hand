@@ -2,13 +2,17 @@ package dev.mariany.arcanehand.client.gui.screen.ingame;
 
 import dev.mariany.arcanehand.AHHelpers;
 import dev.mariany.arcanehand.ArcaneHand;
+import dev.mariany.arcanehand.client.gui.tooltip.EnchantmentProgressionTooltipComponent;
 import dev.mariany.arcanehand.component.enchantment.EnchantmentProgression;
+import dev.mariany.arcanehand.component.enchantment.EnchantmentProgressionComponent;
 import dev.mariany.arcanehand.screen.ArcaneConsoleScreenHandler;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
+import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.PlayerInventory;
@@ -19,7 +23,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -119,23 +122,54 @@ public class ArcaneConsoleScreen extends HandledScreen<ArcaneConsoleScreenHandle
                             int placedY = this.getOptionsY() + row * OPTION_HEIGHT;
 
                             if (isOptionHighlighted(mouseX, mouseY, this.getOptionsX(), placedY)) {
+                                RegistryKey<Enchantment> enchantmentKey = enchantments.get(i).getKey();
                                 EnchantmentProgression progress = enchantments.get(i).getValue();
-                                List<Text> tooltips = new ArrayList<>();
 
-                                enchantmentRegistry
-                                        .getOptional(enchantments.get(i).getKey())
-                                        .ifPresent(enchantment -> tooltips.add(
-                                                AHHelpers.getEnchantmentText(enchantment, progress)
-                                        ));
+                                boolean drawn = enchantmentRegistry
+                                        .getOptional(enchantmentKey)
+                                        .map(enchantment -> {
+                                            TooltipComponent enchantTooltipComponent = TooltipComponent.of(
+                                                    AHHelpers.getEnchantmentText(enchantment, progress).asOrderedText()
+                                            );
 
-                                if (!tooltips.isEmpty()) {
-                                    context.drawTooltip(this.textRenderer, tooltips, mouseX, mouseY);
+                                            EnchantmentProgressionTooltipComponent progressTooltipComponent =
+                                                    getEnchantmentProgressionTooltipComponent(
+                                                            enchantmentKey,
+                                                            progress
+                                                    );
+
+                                            context.drawTooltipImmediately(
+                                                    this.textRenderer,
+                                                    List.of(enchantTooltipComponent, progressTooltipComponent),
+                                                    mouseX,
+                                                    mouseY,
+                                                    HoveredTooltipPositioner.INSTANCE,
+                                                    null
+                                            );
+                                            return true;
+                                        })
+                                        .orElse(false);
+
+                                if (drawn) {
                                     break;
                                 }
                             }
                         }
                     });
         }
+    }
+
+    private static EnchantmentProgressionTooltipComponent getEnchantmentProgressionTooltipComponent(
+            RegistryKey<Enchantment> enchantmentKey,
+            EnchantmentProgression progress
+    ) {
+        EnchantmentProgressionComponent singularProgression =
+                new EnchantmentProgressionComponent(
+                        Map.of(enchantmentKey, progress),
+                        0
+                );
+
+        return new EnchantmentProgressionTooltipComponent(singularProgression, false);
     }
 
     @Override

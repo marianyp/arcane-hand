@@ -24,9 +24,14 @@ public class EnchantmentProgressionTooltipComponent implements TooltipComponent 
             ArcaneHand.id("container/enchantment/enchantment_progressbar_fill");
 
     protected final EnchantmentProgressionComponent enchantmentProgression;
+    protected final boolean considerDisabled;
 
-    public EnchantmentProgressionTooltipComponent(EnchantmentProgressionComponent enchantmentProgression) {
+    public EnchantmentProgressionTooltipComponent(
+            EnchantmentProgressionComponent enchantmentProgression,
+            boolean considerDisabled
+    ) {
         this.enchantmentProgression = enchantmentProgression;
+        this.considerDisabled = considerDisabled;
     }
 
     public int getWidth() {
@@ -54,7 +59,7 @@ public class EnchantmentProgressionTooltipComponent implements TooltipComponent 
     @Override
     public void drawItems(TextRenderer textRenderer, int x, int y, int width, int height, DrawContext context) {
         if (!this.enchantmentProgression.isEmpty()) {
-            this.drawProgressBar(x + this.getXMargin(width), y, textRenderer, context);
+            this.drawProgressBar(x + this.getXMargin(width), y - 1, textRenderer, context);
         }
     }
 
@@ -106,7 +111,7 @@ public class EnchantmentProgressionTooltipComponent implements TooltipComponent 
         ClientPlayerEntity player = MinecraftClient.getInstance().player;
 
         if (player != null) {
-            return this.enchantmentProgression.getSelectedProgress(player.getRegistryManager());
+            return this.enchantmentProgression.getSelectedProgress(player.getRegistryManager(), this.considerDisabled);
         }
 
         return Fraction.ZERO;

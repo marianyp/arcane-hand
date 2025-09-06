@@ -186,7 +186,7 @@ public record EnchantmentProgressionComponent(
         return new EnchantmentProgressionComponent(enchantments, this.selectedEnchantment);
     }
 
-    public Fraction getSelectedProgress(DynamicRegistryManager registryManager) {
+    public Fraction getSelectedProgress(DynamicRegistryManager registryManager, boolean strict) {
         return registryManager
                 .getOptional(RegistryKeys.ENCHANTMENT)
                 .flatMap(enchantmentRegistry -> {
@@ -200,8 +200,7 @@ public record EnchantmentProgressionComponent(
                                     .stream()
                                     .filter(
                                             entry ->
-                                                    entry.getValue()
-                                                         .isEnabled()
+                                                    !strict || entry.getValue().isEnabled()
                                     )
                                     .toList();
 
