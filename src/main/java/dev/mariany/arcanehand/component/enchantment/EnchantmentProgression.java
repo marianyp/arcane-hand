@@ -2,6 +2,8 @@ package dev.mariany.arcanehand.component.enchantment;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import dev.mariany.arcanehand.AHHelpers;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
@@ -56,5 +58,13 @@ public record EnchantmentProgression(int level, int earnedExperience, Enchantmen
                 this.earnedExperience,
                 newState
         );
+    }
+
+    public int getUpgradeCost(Enchantment.Definition definition) {
+        int nextLevel = this.level + 1;
+        Enchantment.Cost minCost = definition.minCost();
+        int base = Math.max(minCost.base(), minCost.perLevelAboveFirst());
+        int cost = Math.min(15, Math.max(base / 2, 1) * nextLevel);
+        return AHHelpers.convertLevelsToExperience(cost);
     }
 }

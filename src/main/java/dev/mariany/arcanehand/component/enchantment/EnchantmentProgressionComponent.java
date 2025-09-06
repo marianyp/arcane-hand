@@ -222,12 +222,13 @@ public record EnchantmentProgressionComponent(
     }
 
     private Fraction getProgressFraction(EnchantmentProgression progression, Enchantment enchantment) {
-        if (progression.level() >= enchantment.definition().maxLevel()) {
+        Enchantment.Definition enchantmentDefinition = enchantment.definition();
+
+        if (progression.level() >= enchantmentDefinition.maxLevel()) {
             return Fraction.ONE;
         }
 
-        int minimumCost = enchantment.definition().minCost().forLevel(progression.level() + 1);
-        int neededExperience = AHHelpers.convertLevelsToExperience(minimumCost);
+        int neededExperience = progression.getUpgradeCost(enchantmentDefinition);
         int earnedExperience = progression.earnedExperience();
 
         return Fraction.getFraction(earnedExperience, neededExperience);

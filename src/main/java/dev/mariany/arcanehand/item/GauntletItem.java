@@ -1,7 +1,6 @@
 package dev.mariany.arcanehand.item;
 
 import com.google.common.collect.ImmutableMap;
-import dev.mariany.arcanehand.AHHelpers;
 import dev.mariany.arcanehand.component.AHComponents;
 import dev.mariany.arcanehand.component.enchantment.EnchantmentProgression;
 import dev.mariany.arcanehand.component.enchantment.EnchantmentProgressionComponent;
@@ -173,15 +172,14 @@ public class GauntletItem extends Item {
 
             if (optionalEnchantment.isPresent()) {
                 Enchantment enchantment = optionalEnchantment.get();
-                Enchantment.Definition definition = enchantment.definition();
+                Enchantment.Definition enchantmentDefinition = enchantment.definition();
 
-                if (!enabled || level >= definition.maxLevel()) {
+                if (!enabled || level >= enchantmentDefinition.maxLevel()) {
                     progression.put(enchantmentKey, progress);
                     ++skipped;
                 } else {
-                    int cost = definition.minCost().forLevel(nextLevel);
                     int previousExperience = progress.earnedExperience();
-                    int target = AHHelpers.convertLevelsToExperience(cost);
+                    int target = progress.getUpgradeCost(enchantmentDefinition);
                     int consumed;
 
                     if (remaining >= target - previousExperience) {
