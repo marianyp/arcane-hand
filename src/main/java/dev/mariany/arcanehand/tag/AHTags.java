@@ -10,7 +10,6 @@ import net.minecraft.registry.tag.TagKey;
 public final class AHTags {
     public static final class Items {
         public static final TagKey<Item> GAUNTLET_TOOL_MATERIALS = createTag("gauntlet_tool_materials");
-        public static final TagKey<Item> GAUNTLET_SHARES_ENCHANTMENTS = createTag("gauntlet_enchantable");
         public static final TagKey<Item> ARCANE_CONSOLE_MODIFIABLE = createTag("arcane_console_modifiable");
 
         private static TagKey<Item> createTag(String name) {

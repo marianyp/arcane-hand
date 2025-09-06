@@ -32,11 +32,19 @@ dependencies {
 }
 
 processResources {
-	inputs.property "version", project.version
+	var expandProps = [
+			minecraft_version        : minecraft_version,
+			mod_id                   : mod_id, mod_name: mod_name, mod_version: mod_version,
+			mod_authors              : mod_authors, mod_description: mod_description,
+			mod_page_url             : mod_page_url, mod_git_url: mod_git_url,
+			mod_license              : mod_license
+	]
 
 	filesMatching("fabric.mod.json") {
-		expand "version": inputs.properties.version
+		expand expandProps
 	}
+
+	inputs.properties(expandProps)
 }
 
 tasks.withType(JavaCompile).configureEach {

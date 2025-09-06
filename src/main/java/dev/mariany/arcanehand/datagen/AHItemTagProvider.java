@@ -25,14 +25,6 @@ public class AHItemTagProvider extends FabricTagProvider.ItemTagProvider {
         valueLookupBuilder(AHTags.Items.GAUNTLET_TOOL_MATERIALS)
                 .add(Items.LEATHER);
 
-        valueLookupBuilder(AHTags.Items.GAUNTLET_SHARES_ENCHANTMENTS)
-                .addOptionalTag(ItemTags.ARMOR_ENCHANTABLE)
-                .addOptionalTag(ItemTags.DURABILITY_ENCHANTABLE)
-                .addOptionalTag(ItemTags.MINING_ENCHANTABLE)
-                .addOptionalTag(ItemTags.MINING_LOOT_ENCHANTABLE)
-                .addOptionalTag(ItemTags.SWORD_ENCHANTABLE);
-
-
         valueLookupBuilder(AHTags.Items.ARCANE_CONSOLE_MODIFIABLE).add(AHItems.GAUNTLET);
     }
 }
