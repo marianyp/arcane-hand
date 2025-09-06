@@ -1,4 +1,8 @@
 {
+  "advancements.arcanehand.story.gauntlet.title": "A Reinforced Fist",
+  "advancements.arcanehand.story.gauntlet.description": "Obtain a Gauntlet",
+  "advancements.arcanehand.story.level_up.title": "Discovered Potential",
+  "advancements.arcanehand.story.level_up.description": "Level up an enchantment on your Gauntlet",
   "block.arcanehand.arcane_console": "Arcane Console",
   "container.arcanehand.arcane_console": "Arcane Console",
   "item.arcanehand.gauntlet": "Gauntlet",

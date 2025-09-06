@@ -1,6 +1,7 @@
 package dev.mariany.arcanehand.item;
 
 import com.google.common.collect.ImmutableMap;
+import dev.mariany.arcanehand.advancement.criterion.AHCriteria;
 import dev.mariany.arcanehand.component.AHComponents;
 import dev.mariany.arcanehand.component.enchantment.EnchantmentProgression;
 import dev.mariany.arcanehand.component.enchantment.EnchantmentProgressionComponent;
@@ -17,6 +18,7 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.registry.tag.TagKey;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 
 import java.util.*;
@@ -137,7 +139,8 @@ public class GauntletItem extends Item {
         stack.set(DataComponentTypes.ENCHANTMENTS, progressionComponent.toEnchantments(dynamicRegistryManager));
     }
 
-    public static int progress(ServerWorld world, ItemStack gauntlet, int experience) {
+    public static int progress(ServerPlayerEntity player, ItemStack gauntlet, int experience) {
+        ServerWorld world = player.getWorld();
         DynamicRegistryManager registryManager = world.getRegistryManager();
         Registry<Enchantment> enchantmentRegistry = registryManager.getOrThrow(RegistryKeys.ENCHANTMENT);
 
@@ -185,6 +188,7 @@ public class GauntletItem extends Item {
                     if (remaining >= target - previousExperience) {
                         consumed = target - previousExperience;
                         remaining -= consumed;
+
                         progression.put(
                                 enchantmentKey,
                                 new EnchantmentProgression(
@@ -193,6 +197,8 @@ public class GauntletItem extends Item {
                                         EnchantmentProgressionState.ENABLED
                                 )
                         );
+
+                        AHCriteria.LEVELED_UP.trigger(player);
                     } else {
                         consumed = remaining;
                         progression.put(
@@ -214,7 +220,7 @@ public class GauntletItem extends Item {
         applyProgress(registryManager, progression, gauntlet);
 
         if (remaining > 0 && skipped < progression.size()) {
-            return progress(world, gauntlet, remaining);
+            return progress(player, gauntlet, remaining);
         }
 
         return remaining;

@@ -1,5 +1,6 @@
 package dev.mariany.arcanehand;
 
+import dev.mariany.arcanehand.advancement.criterion.AHCriteria;
 import dev.mariany.arcanehand.block.AHBlocks;
 import dev.mariany.arcanehand.component.AHComponents;
 import dev.mariany.arcanehand.item.AHItems;
@@ -25,6 +26,7 @@ public class ArcaneHand implements ModInitializer {
     public void onInitialize() {
         registerPackets();
         AHStats.bootstrap();
+        AHCriteria.bootstrap();
         AHComponents.bootstrap();
         AHItems.bootstrap();
         AHScreenHandlers.bootstrap();

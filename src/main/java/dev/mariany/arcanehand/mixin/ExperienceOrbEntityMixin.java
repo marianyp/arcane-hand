@@ -6,7 +6,6 @@ import dev.mariany.arcanehand.item.GauntletItem;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
@@ -25,12 +24,11 @@ public class ExperienceOrbEntityMixin {
             int amount,
             Operation<Integer> original
     ) {
-        ServerWorld world = player.getWorld();
         ItemStack mainHandStack = player.getMainHandStack();
         ItemStack offHandStack = player.getOffHandStack();
 
-        int mainHandRemainder = GauntletItem.progress(world, mainHandStack, amount);
-        int offHandRemainder = GauntletItem.progress(world, offHandStack, mainHandRemainder);
+        int mainHandRemainder = GauntletItem.progress(player, mainHandStack, amount);
+        int offHandRemainder = GauntletItem.progress(player, offHandStack, mainHandRemainder);
 
         return original.call(experienceOrbEntity, player, offHandRemainder);
     }

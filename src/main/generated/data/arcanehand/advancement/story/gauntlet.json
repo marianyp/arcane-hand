@@ -1,0 +1,33 @@
+{
+  "parent": "minecraft:story/iron_tools",
+  "criteria": {
+    "gauntlet": {
+      "conditions": {
+        "items": [
+          {
+            "items": "arcanehand:gauntlet"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.arcanehand.story.gauntlet.description"
+    },
+    "icon": {
+      "count": 1,
+      "id": "arcanehand:gauntlet"
+    },
+    "title": {
+      "translate": "advancements.arcanehand.story.gauntlet.title"
+    }
+  },
+  "requirements": [
+    [
+      "gauntlet"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

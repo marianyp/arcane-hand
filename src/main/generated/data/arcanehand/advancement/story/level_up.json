@@ -1,0 +1,30 @@
+{
+  "parent": "arcanehand:story/gauntlet",
+  "criteria": {
+    "leveled_up": {
+      "trigger": "arcanehand:leveled_up"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.arcanehand.story.level_up.description"
+    },
+    "icon": {
+      "components": {
+        "minecraft:dyed_color": -8355712,
+        "minecraft:enchantment_glint_override": true
+      },
+      "count": 1,
+      "id": "arcanehand:gauntlet"
+    },
+    "title": {
+      "translate": "advancements.arcanehand.story.level_up.title"
+    }
+  },
+  "requirements": [
+    [
+      "leveled_up"
+    ]
+  ],
+  "sends_telemetry_event": true
+}
