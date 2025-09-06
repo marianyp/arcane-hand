@@ -7,6 +7,7 @@ import dev.mariany.arcanehand.loot.LootTableModifiers;
 import dev.mariany.arcanehand.packet.AHPackets;
 import dev.mariany.arcanehand.packet.serverbound.ServerBoundPackets;
 import dev.mariany.arcanehand.screen.AHScreenHandlers;
+import dev.mariany.arcanehand.stat.AHStats;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
@@ -23,6 +24,7 @@ public class ArcaneHand implements ModInitializer {
     @Override
     public void onInitialize() {
         registerPackets();
+        AHStats.bootstrap();
         AHComponents.bootstrap();
         AHItems.bootstrap();
         AHScreenHandlers.bootstrap();

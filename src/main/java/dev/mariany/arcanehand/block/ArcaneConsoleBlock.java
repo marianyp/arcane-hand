@@ -1,6 +1,7 @@
 package dev.mariany.arcanehand.block;
 
 import dev.mariany.arcanehand.screen.ArcaneConsoleScreenHandler;
+import dev.mariany.arcanehand.stat.AHStats;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -24,7 +25,7 @@ public class ArcaneConsoleBlock extends Block {
     protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
         if (!world.isClient) {
             player.openHandledScreen(state.createScreenHandlerFactory(world, pos));
-//            player.incrementStat(Stats.INTERACT_WITH_CRAFTING_TABLE);
+            player.incrementStat(AHStats.INTERACT_WITH_ARCANE_CONSOLE);
         }
 
         return ActionResult.SUCCESS;
