@@ -3,6 +3,7 @@
   "package": "dev.mariany.arcanehand.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "AnvilScreenHandlerMixin",
     "EnchantmentHelperMixin",
     "ExperienceOrbEntityMixin",
     "ItemEnchantmentsComponentMixin",

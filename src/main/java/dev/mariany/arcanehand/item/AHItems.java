@@ -6,6 +6,7 @@ import dev.mariany.arcanehand.component.enchantment.EnchantmentProgressionCompon
 import dev.mariany.arcanehand.item.equipment.AHMaterials;
 import dev.mariany.arcanehand.tag.AHTags;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
+import net.minecraft.block.cauldron.CauldronBehavior;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroups;
@@ -54,5 +55,11 @@ public class AHItems {
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.COMBAT).register(entries -> {
             entries.addAfter(Items.MACE, GAUNTLET);
         });
+
+        registerCauldronBehavior();
+    }
+
+    private static void registerCauldronBehavior() {
+        CauldronBehavior.WATER_CAULDRON_BEHAVIOR.map().put(GAUNTLET, CauldronBehavior::cleanArmor);
     }
 }

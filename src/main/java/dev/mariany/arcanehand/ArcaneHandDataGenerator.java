@@ -8,6 +8,7 @@ public class ArcaneHandDataGenerator implements DataGeneratorEntrypoint {
     @Override
     public void onInitializeDataGenerator(FabricDataGenerator fabricDataGenerator) {
         FabricDataGenerator.Pack pack = fabricDataGenerator.createPack();
+        pack.addProvider(AHBlockLootTableProvider::new);
         pack.addProvider(AHBlockTagProvider::new);
         pack.addProvider(AHEnchantmentTagProvider::new);
         pack.addProvider(AHItemTagProvider::new);

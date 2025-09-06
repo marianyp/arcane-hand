@@ -1,6 +1,5 @@
 package dev.mariany.arcanehand.datagen;
 
-import dev.mariany.arcanehand.block.AHBlocks;
 import dev.mariany.arcanehand.item.AHItems;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
@@ -35,16 +34,6 @@ public class AHRecipeProvider extends FabricRecipeProvider {
                     .input('L', Items.LEATHER)
                     .input('N', Items.NETHERITE_INGOT)
                     .criterion(hasItem(Items.NETHERITE_INGOT), conditionsFromItem(Items.NETHERITE_INGOT))
-                    .offerTo(this.exporter);
-
-                this.createShaped(RecipeCategory.MISC, AHBlocks.ARCANE_CONSOLE)
-                    .pattern("SDS")
-                    .pattern("DAD")
-                    .pattern("SDS")
-                    .input('A', Items.AMETHYST_SHARD)
-                    .input('D', Items.DIAMOND)
-                    .input('S', Items.SMOOTH_STONE)
-                    .criterion(hasItem(AHItems.GAUNTLET), conditionsFromItem(AHItems.GAUNTLET))
                     .offerTo(this.exporter);
             }
         };
