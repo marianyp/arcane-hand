@@ -1,5 +1,6 @@
 {
   "block.arcanehand.arcane_console": "Arcane Console",
   "container.arcanehand.arcane_console": "Arcane Console",
-  "item.arcanehand.gauntlet": "Gauntlet"
+  "item.arcanehand.gauntlet": "Gauntlet",
+  "stat.arcanehand.interact_with_arcane_console": "Interactions with Arcane Console"
 }

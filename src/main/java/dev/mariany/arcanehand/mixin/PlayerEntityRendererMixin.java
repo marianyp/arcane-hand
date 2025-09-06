@@ -4,8 +4,6 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import dev.mariany.arcanehand.AHHelpers;
 import dev.mariany.arcanehand.client.render.entity.feature.GauntletFeatureRenderer;
-import dev.mariany.arcanehand.client.render.entity.state.EntityWithGauntletRenderState;
-import dev.mariany.arcanehand.client.render.entity.state.GauntletRenderState;
 import dev.mariany.arcanehand.mixin.accessor.LivingEntityRendererAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
@@ -47,32 +45,6 @@ public abstract class PlayerEntityRendererMixin
         }
 
         return original.call(stack);
-    }
-
-    @Inject(
-            method = "updateRenderState(Lnet/minecraft/client/network/AbstractClientPlayerEntity;Lnet/minecraft/client/render/entity/state/PlayerEntityRenderState;F)V",
-            at = @At(value = "TAIL")
-    )
-    public void injectUpdateRenderState(
-            AbstractClientPlayerEntity player,
-            PlayerEntityRenderState playerEntityRenderState,
-            float delta,
-            CallbackInfo ci
-    ) {
-        if (playerEntityRenderState instanceof EntityWithGauntletRenderState entityWithGauntletRenderState) {
-            GauntletRenderState gauntletRenderState = entityWithGauntletRenderState.arcanehand$getGauntletRenderState();
-
-            ItemStack mainHandStack = player.getMainHandStack();
-            ItemStack offHandStack = player.getOffHandStack();
-
-            gauntletRenderState.mainHandAlignedRight = player.getMainArm().equals(Arm.RIGHT);
-            gauntletRenderState.inMainHand = AHHelpers.isGauntlet(mainHandStack);
-            gauntletRenderState.inOffHand = AHHelpers.isGauntlet(offHandStack);
-            gauntletRenderState.mainHandGlinted = mainHandStack.hasGlint();
-            gauntletRenderState.offHandGlinted = offHandStack.hasGlint();
-            gauntletRenderState.mainHandColor = AHHelpers.getGauntletColor(mainHandStack);
-            gauntletRenderState.offHandColor = AHHelpers.getGauntletColor(offHandStack);
-        }
     }
 
     @Inject(method = "renderRightArm", at = @At("TAIL"))
