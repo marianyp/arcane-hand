@@ -17,11 +17,12 @@
     "requireAnnotations": true
   },
   "client": [
-    "LivingEntityRendererMixin",
-    "LivingEntityRenderStateMixin",
     "HandledScreenMixin",
     "HeldItemRendererMixin",
     "ItemModelManagerMixin",
+    "LivingEntityRenderStateMixin",
+    "LivingEntityRendererMixin",
+    "MouseTweaksMainMixin",
     "PlayerEntityRendererMixin",
     "accessor.LivingEntityRendererAccessor",
     "accessor.PlayerEntityModelAccessor"
