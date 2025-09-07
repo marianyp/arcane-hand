@@ -12,7 +12,7 @@ public class AHMaterials {
             0.1F,
             9F,
             3,
-            856,
+            1091,
             15
     );
 }
