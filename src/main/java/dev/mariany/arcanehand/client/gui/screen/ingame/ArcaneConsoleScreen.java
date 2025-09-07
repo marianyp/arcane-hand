@@ -1,11 +1,11 @@
 package dev.mariany.arcanehand.client.gui.screen.ingame;
 
-import dev.mariany.arcanehand.AHHelpers;
 import dev.mariany.arcanehand.ArcaneHand;
 import dev.mariany.arcanehand.client.gui.tooltip.EnchantmentProgressionTooltipComponent;
 import dev.mariany.arcanehand.component.enchantment.EnchantmentProgression;
 import dev.mariany.arcanehand.component.enchantment.EnchantmentProgressionComponent;
 import dev.mariany.arcanehand.screen.ArcaneConsoleScreenHandler;
+import dev.mariany.arcanehand.util.AHHelper;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gl.RenderPipelines;
@@ -129,7 +129,10 @@ public class ArcaneConsoleScreen extends HandledScreen<ArcaneConsoleScreenHandle
                                         .getOptional(enchantmentKey)
                                         .map(enchantment -> {
                                             TooltipComponent enchantTooltipComponent = TooltipComponent.of(
-                                                    AHHelpers.getEnchantmentText(enchantment, progress).asOrderedText()
+                                                    EnchantmentProgression.getEnchantmentText(
+                                                            enchantment,
+                                                            progress
+                                                    ).asOrderedText()
                                             );
 
                                             EnchantmentProgressionTooltipComponent progressTooltipComponent =
@@ -345,7 +348,7 @@ public class ArcaneConsoleScreen extends HandledScreen<ArcaneConsoleScreenHandle
     }
 
     private boolean isOptionHighlighted(double mouseX, double mouseY, int optionX, int optionY) {
-        return AHHelpers.pointInRect(mouseX, mouseY, optionX, optionY, OPTION_WIDTH, OPTION_HEIGHT);
+        return AHHelper.pointInRect(mouseX, mouseY, optionX, optionY, OPTION_WIDTH, OPTION_HEIGHT);
     }
 
     @Override
@@ -380,7 +383,7 @@ public class ArcaneConsoleScreen extends HandledScreen<ArcaneConsoleScreenHandle
                 }
 
                 if (
-                        AHHelpers.pointInRect(
+                        AHHelper.pointInRect(
                                 mouseX,
                                 mouseY,
                                 scrollerX,

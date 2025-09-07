@@ -2,7 +2,7 @@ package dev.mariany.arcanehand.mixin;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import dev.mariany.arcanehand.AHHelpers;
+import dev.mariany.arcanehand.item.GauntletItem;
 import net.minecraft.component.ComponentType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.AnvilScreenHandler;
@@ -20,7 +20,7 @@ public class AnvilScreenHandlerMixin {
             )
     )
     public <T> T updateResult(ItemStack stack, ComponentType<T> type, @Nullable T value, Operation<T> original) {
-        if (AHHelpers.isGauntlet(stack)) {
+        if (GauntletItem.isGauntlet(stack)) {
             return original.call(stack, type, 0);
         }
 

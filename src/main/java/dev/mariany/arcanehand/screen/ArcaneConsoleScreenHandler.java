@@ -305,7 +305,7 @@ public class ArcaneConsoleScreenHandler extends ScreenHandler {
                 }
             }
 
-            return GauntletItem.isAcceptable(enchantment);
+            return GauntletItem.isAcceptableEnchantment(enchantment);
         }
 
         return enchantment.isAcceptableItem(stack);

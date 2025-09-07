@@ -7,6 +7,7 @@ import dev.mariany.arcanehand.component.enchantment.EnchantmentProgression;
 import dev.mariany.arcanehand.component.enchantment.EnchantmentProgressionComponent;
 import dev.mariany.arcanehand.component.enchantment.EnchantmentProgressionState;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.DyedColorComponent;
 import net.minecraft.component.type.TooltipDisplayComponent;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.Item;
@@ -24,6 +25,8 @@ import net.minecraft.server.world.ServerWorld;
 import java.util.*;
 
 public class GauntletItem extends Item {
+    public static final int DEFAULT_GAUNTLET_COLOR = -6265536;
+
     private static final List<TagKey<Item>> GAUNTLET_ENCHANTABLE = List.of(
             ItemTags.ARMOR_ENCHANTABLE,
             ItemTags.DURABILITY_ENCHANTABLE,
@@ -53,6 +56,28 @@ public class GauntletItem extends Item {
         return tooltipDisplayComponent.shouldDisplay(AHComponents.ENCHANTMENT_PROGRESSION)
                 ? Optional.ofNullable(stack.get(AHComponents.ENCHANTMENT_PROGRESSION))
                 : Optional.empty();
+    }
+
+    public static boolean isGauntlet(ItemStack stack) {
+        return stack.getItem() instanceof GauntletItem;
+    }
+
+    public static int getColor(ItemStack stack) {
+        if (isGauntlet(stack)) {
+            int color = DyedColorComponent.getColor(stack, 0);
+            return color != 0 ? color : DEFAULT_GAUNTLET_COLOR;
+        }
+
+        return DEFAULT_GAUNTLET_COLOR;
+    }
+
+    public static boolean isAcceptableEnchantment(Enchantment enchantment) {
+        return enchantment
+                .definition()
+                .supportedItems()
+                .getTagKey()
+                .map(GAUNTLET_ENCHANTABLE::contains)
+                .orElse(false);
     }
 
     public static ImmutableMap<RegistryKey<Enchantment>, EnchantmentProgression> getEnchantments(ItemStack stack) {
@@ -90,15 +115,6 @@ public class GauntletItem extends Item {
                     )
             );
         }
-    }
-
-    public static boolean isAcceptable(Enchantment enchantment) {
-        return enchantment
-                .definition()
-                .supportedItems()
-                .getTagKey()
-                .map(GAUNTLET_ENCHANTABLE::contains)
-                .orElse(false);
     }
 
     public static void applyProgress(
@@ -139,12 +155,12 @@ public class GauntletItem extends Item {
         stack.set(DataComponentTypes.ENCHANTMENTS, progressionComponent.toEnchantments(dynamicRegistryManager));
     }
 
-    public static int progress(ServerPlayerEntity player, ItemStack gauntlet, int experience) {
+    public static int progress(ServerPlayerEntity player, ItemStack stack, int experience) {
         ServerWorld world = player.getWorld();
         DynamicRegistryManager registryManager = world.getRegistryManager();
         Registry<Enchantment> enchantmentRegistry = registryManager.getOrThrow(RegistryKeys.ENCHANTMENT);
 
-        EnchantmentProgressionComponent enchantmentProgressionComponent = gauntlet.getOrDefault(
+        EnchantmentProgressionComponent enchantmentProgressionComponent = stack.getOrDefault(
                 AHComponents.ENCHANTMENT_PROGRESSION,
                 EnchantmentProgressionComponent.DEFAULT
         );
@@ -217,10 +233,10 @@ public class GauntletItem extends Item {
             }
         }
 
-        applyProgress(registryManager, progression, gauntlet);
+        applyProgress(registryManager, progression, stack);
 
         if (remaining > 0 && skipped < progression.size()) {
-            return progress(player, gauntlet, remaining);
+            return progress(player, stack, remaining);
         }
 
         return remaining;

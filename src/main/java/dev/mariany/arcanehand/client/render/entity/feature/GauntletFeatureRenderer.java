@@ -1,11 +1,11 @@
 package dev.mariany.arcanehand.client.render.entity.feature;
 
-import dev.mariany.arcanehand.AHHelpers;
 import dev.mariany.arcanehand.ArcaneHand;
 import dev.mariany.arcanehand.client.render.entity.model.AHModels;
 import dev.mariany.arcanehand.client.render.entity.model.GauntletEntityModel;
 import dev.mariany.arcanehand.client.render.entity.state.EntityWithGauntletRenderState;
 import dev.mariany.arcanehand.client.render.entity.state.GauntletRenderState;
+import dev.mariany.arcanehand.item.GauntletItem;
 import dev.mariany.arcanehand.mixin.accessor.PlayerEntityModelAccessor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -93,7 +93,7 @@ public class GauntletFeatureRenderer<S extends BipedEntityRenderState, M extends
                 vertices,
                 light,
                 arm == Arm.RIGHT,
-                AHHelpers.getGauntletColor(stack),
+                GauntletItem.getColor(stack),
                 stack.hasGlint(),
                 getUsedTexture(this.getContextModel()),
                 getUsedOverlay(this.getContextModel())

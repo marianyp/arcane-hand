@@ -2,7 +2,8 @@ package dev.mariany.arcanehand.mixin;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import dev.mariany.arcanehand.AHHelpers;
+import dev.mariany.arcanehand.item.GauntletItem;
+import dev.mariany.arcanehand.util.AHHelper;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.item.HeldItemRenderer;
@@ -44,7 +45,7 @@ public abstract class HeldItemRendererMixin {
             int light,
             CallbackInfo ci
     ) {
-        if (AHHelpers.isGauntlet(stack)) {
+        if (GauntletItem.isGauntlet(stack)) {
             ci.cancel();
         }
     }
@@ -54,7 +55,7 @@ public abstract class HeldItemRendererMixin {
             at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isEmpty()Z", ordinal = 0)
     )
     private boolean wrapIsEmpty(ItemStack stack, Operation<Boolean> original) {
-        return original.call(stack) || AHHelpers.isGauntlet(stack);
+        return original.call(stack) || GauntletItem.isGauntlet(stack);
     }
 
     @Inject(
@@ -78,14 +79,14 @@ public abstract class HeldItemRendererMixin {
             int light,
             CallbackInfo ci
     ) {
-        if (AHHelpers.isGauntlet(player.getStackInHand(hand)) && !player.isInvisible() && hand == Hand.OFF_HAND) {
+        if (GauntletItem.isGauntlet(player.getStackInHand(hand)) && !player.isInvisible() && hand == Hand.OFF_HAND) {
             this.renderArmHoldingItem(
                     matrices,
                     vertexConsumers,
                     light,
                     equipProgress,
                     swingProgress,
-                    AHHelpers.getArm(hand, player)
+                    AHHelper.getArm(hand, player)
             );
         }
     }

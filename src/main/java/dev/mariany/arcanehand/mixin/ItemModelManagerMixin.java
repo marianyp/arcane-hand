@@ -2,7 +2,8 @@ package dev.mariany.arcanehand.mixin;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import dev.mariany.arcanehand.AHHelpers;
+import dev.mariany.arcanehand.item.GauntletItem;
+import dev.mariany.arcanehand.util.AHHelper;
 import net.minecraft.client.item.ItemModelManager;
 import net.minecraft.client.render.item.ItemRenderState;
 import net.minecraft.entity.LivingEntity;
@@ -32,7 +33,7 @@ public class ItemModelManagerMixin {
             int seed,
             Operation<Void> original
     ) {
-        if (AHHelpers.isThirdPerson(displayContext) && AHHelpers.isGauntlet(stack)) {
+        if (AHHelper.isThirdPerson(displayContext) && GauntletItem.isGauntlet(stack)) {
             stack = Items.AIR.getDefaultStack();
         }
 

@@ -11,6 +11,9 @@ base {
 }
 
 repositories {
+	maven {
+		url "https://cursemaven.com"
+	}
 }
 
 loom {
@@ -29,6 +32,9 @@ dependencies {
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+
+	modCompileOnly "curse.maven:clumps-${project.clumps_project_id}:${project.clumps_file_id}"
+	modRuntimeOnly "curse.maven:clumps-${project.clumps_project_id}:${project.clumps_file_id}"
 }
 
 processResources {

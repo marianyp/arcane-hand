@@ -2,6 +2,7 @@ package dev.mariany.arcanehand;
 
 import dev.mariany.arcanehand.advancement.criterion.AHCriteria;
 import dev.mariany.arcanehand.block.AHBlocks;
+import dev.mariany.arcanehand.compat.ClumpsCompat;
 import dev.mariany.arcanehand.component.AHComponents;
 import dev.mariany.arcanehand.item.AHItems;
 import dev.mariany.arcanehand.loot.LootTableModifiers;
@@ -32,6 +33,7 @@ public class ArcaneHand implements ModInitializer {
         AHScreenHandlers.bootstrap();
         AHBlocks.bootstrap();
         LootTableModifiers.modifyLootTables();
+        ClumpsCompat.bootstrap();
     }
 
     private void registerPackets() {
