@@ -29,8 +29,12 @@ public interface AHHelper {
         return pointX >= x && pointY >= y && pointX < x + width && pointY < y + height;
     }
 
-    static boolean canMineRadius(ItemStack stack) {
-        return getMineRadius(stack) > 0;
+    static boolean canMineMultipleBlocks(PlayerEntity player) {
+        return getMineRadius(player) > 0;
+    }
+
+    static int getMineRadius(PlayerEntity player) {
+        return getMineRadius(player.getStackInHand(Hand.MAIN_HAND));
     }
 
     static int getMineRadius(ItemStack stack) {

@@ -11,7 +11,6 @@ import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
@@ -49,9 +48,7 @@ public class WorldRendererMixin {
         ClientWorld world = this.client.world;
 
         if (player != null && world != null) {
-            ItemStack stack = player.getMainHandStack();
-
-            if (AHHelper.canMineRadius(stack) && !player.isSneaking()) {
+            if (AHHelper.canMineMultipleBlocks(player) && !player.isSneaking()) {
                 if (client.crosshairTarget instanceof BlockHitResult crosshairTarget) {
                     BlockPos crosshairPos = crosshairTarget.getBlockPos();
 
@@ -63,17 +60,21 @@ public class WorldRendererMixin {
                         for (BlockPos position : positions) {
                             if (BlockBreaker.canHarvest(player, crosshairPos)) {
                                 BlockPos diffPos = position.subtract(crosshairPos);
-                                outlineShapes.set(
-                                        0,
-                                        VoxelShapes.union(
-                                                outlineShapes.getFirst(),
-                                                VoxelShapes.fullCube().offset(
-                                                        diffPos.getX(),
-                                                        diffPos.getY(),
-                                                        diffPos.getZ()
-                                                )
-                                        )
-                                );
+                                BlockState offsetShape = world.getBlockState(position);
+
+                                if (!offsetShape.isAir()) {
+                                    outlineShapes.set(
+                                            0,
+                                            VoxelShapes.union(
+                                                    outlineShapes.getFirst(),
+                                                    VoxelShapes.fullCube().offset(
+                                                            diffPos.getX(),
+                                                            diffPos.getY(),
+                                                            diffPos.getZ()
+                                                    )
+                                            )
+                                    );
+                                }
                             }
                         }
 

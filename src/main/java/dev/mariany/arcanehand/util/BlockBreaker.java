@@ -11,7 +11,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.network.ServerPlayerInteractionManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stats;
-import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -108,14 +107,13 @@ public interface BlockBreaker {
         }
     }
 
-    static List<BlockPos> collectPositions(World world, PlayerEntity playerEntity) {
-        ItemStack stack = playerEntity.getStackInHand(Hand.MAIN_HAND);
-        int radius = AHHelper.getMineRadius(stack);
+    static List<BlockPos> collectPositions(World world, PlayerEntity player) {
+        int radius = AHHelper.getMineRadius(player);
         ArrayList<BlockPos> potentialBrokenBlocks = new ArrayList<>();
 
-        Vec3d cameraPos = playerEntity.getCameraPosVec(1);
-        Vec3d rotation = playerEntity.getRotationVec(1);
-        double reachDistance = playerEntity.getBlockInteractionRange();
+        Vec3d cameraPos = player.getCameraPosVec(1);
+        Vec3d rotation = player.getRotationVec(1);
+        double reachDistance = player.getBlockInteractionRange();
 
         Vec3d combined = cameraPos.add(
                 rotation.x * reachDistance,
@@ -129,7 +127,7 @@ public interface BlockBreaker {
                         combined,
                         RaycastContext.ShapeType.OUTLINE,
                         RaycastContext.FluidHandling.NONE,
-                        playerEntity
+                        player
                 )
         );
 

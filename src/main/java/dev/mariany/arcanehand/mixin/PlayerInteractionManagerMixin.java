@@ -3,7 +3,6 @@ package dev.mariany.arcanehand.mixin;
 import dev.mariany.arcanehand.server.network.MiningState;
 import dev.mariany.arcanehand.util.AHHelper;
 import dev.mariany.arcanehand.util.BlockBreaker;
-import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.network.ServerPlayerInteractionManager;
 import net.minecraft.server.world.ServerWorld;
@@ -35,9 +34,7 @@ public class PlayerInteractionManagerMixin implements MiningState {
             cancellable = true
     )
     private void tryBreak(BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
-        ItemStack stack = player.getMainHandStack();
-
-        if (AHHelper.canMineRadius(stack)) {
+        if (AHHelper.canMineMultipleBlocks(player)) {
             if (isMining || BlockBreaker.attemptBreak(world, pos, player)) {
                 cir.setReturnValue(true);
             }
