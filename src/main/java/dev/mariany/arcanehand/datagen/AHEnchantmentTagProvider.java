@@ -36,6 +36,7 @@ public class AHEnchantmentTagProvider extends EnchantmentTagProvider {
         this.builder(AHTags.Enchantments.IN_ARCANE_CONSOLE)
             .addOptionalTag(EnchantmentTags.IN_ENCHANTING_TABLE)
             .add(AHEnchantments.ABUNDANCE)
-            .add(AHEnchantments.BLAZE);
+            .add(AHEnchantments.BLAZE)
+            .add(AHEnchantments.EXCAVATE);
     }
 }

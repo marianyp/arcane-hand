@@ -27,6 +27,7 @@ import net.minecraft.registry.tag.EnchantmentTags;
 public interface AHEnchantments {
     RegistryKey<Enchantment> ABUNDANCE = of("abundance");
     RegistryKey<Enchantment> BLAZE = of("blaze");
+    RegistryKey<Enchantment> EXCAVATE = of("excavate");
 
     static void bootstrap(Registerable<Enchantment> registry) {
         RegistryEntryLookup<Enchantment> enchantmentRegistry = registry.getRegistryLookup(RegistryKeys.ENCHANTMENT);
@@ -84,6 +85,28 @@ public interface AHEnchantments {
                                    )
                            )
                            .addEffect(AHEnchantmentEffectComponents.SMELT_DROPS)
+        );
+
+        register(
+                registry,
+                EXCAVATE,
+                Enchantment.builder(
+                                   Enchantment.definition(
+                                           itemRegistry.getOrThrow(AHTags.Items.GAUNTLET_ENCHANTABLE),
+                                           2,
+                                           1,
+                                           Enchantment.constantCost(30),
+                                           Enchantment.constantCost(80),
+                                           4,
+                                           AttributeModifierSlot.MAINHAND
+                                   )
+                           )
+                           .addEffect(
+                                   AHEnchantmentEffectComponents.MINE_RADIUS,
+                                   new AddEnchantmentEffect(
+                                           EnchantmentLevelBasedValue.linear(1)
+                                   )
+                           )
         );
     }
 

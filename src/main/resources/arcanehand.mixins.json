@@ -9,6 +9,7 @@
     "ExperienceOrbEntityMixin",
     "ItemEnchantmentsComponentMixin",
     "LivingEntityMixin",
+    "PlayerInteractionManagerMixin",
     "accessor.EntityAccessor"
   ],
   "injectors": {
@@ -25,6 +26,7 @@
     "LivingEntityRenderStateMixin",
     "MouseTweaksMainMixin",
     "PlayerEntityRendererMixin",
+    "WorldRendererMixin",
     "accessor.LivingEntityRendererAccessor",
     "accessor.PlayerEntityModelAccessor"
   ]
