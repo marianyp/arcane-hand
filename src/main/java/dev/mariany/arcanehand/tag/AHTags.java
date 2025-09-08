@@ -9,10 +9,9 @@ import net.minecraft.registry.tag.TagKey;
 
 public final class AHTags {
     public static final class Items {
-        public static final TagKey<Item> GAUNTLET_TOOL_MATERIALS = createTag("gauntlet_tool_materials");
         public static final TagKey<Item> ARCANE_CONSOLE_MODIFIABLE = createTag("arcane_console_modifiable");
         public static final TagKey<Item> GAUNTLET_ENCHANTABLE = createTag("gauntlet_enchantable");
-        public static final TagKey<Item> BLAZE_ENCHANTABLE = createTag("blaze_enchantable");
+        public static final TagKey<Item> GAUNTLET_TOOL_MATERIALS = createTag("gauntlet_tool_materials");
 
         private static TagKey<Item> createTag(String name) {
             return TagKey.of(RegistryKeys.ITEM, ArcaneHand.id(name));
@@ -30,6 +29,7 @@ public final class AHTags {
     public static final class Enchantments {
         public static final TagKey<Enchantment> GAUNTLET_BLACKLIST = createTag("gauntlet_blacklist");
         public static final TagKey<Enchantment> IN_ARCANE_CONSOLE = createTag("in_arcane_console");
+        public static final TagKey<Enchantment> MATCHES_ABUNDANCE = createTag("matches_abundance");
 
         private static TagKey<Enchantment> createTag(String name) {
             return TagKey.of(RegistryKeys.ENCHANTMENT, ArcaneHand.id(name));

@@ -2,27 +2,34 @@ package dev.mariany.arcanehand.client.gui.screen.ingame;
 
 import dev.mariany.arcanehand.ArcaneHand;
 import dev.mariany.arcanehand.client.gui.tooltip.EnchantmentProgressionTooltipComponent;
-import dev.mariany.arcanehand.enchantment.EnchantmentProgression;
 import dev.mariany.arcanehand.component.type.EnchantmentProgressionComponent;
+import dev.mariany.arcanehand.enchantment.EnchantmentProgression;
 import dev.mariany.arcanehand.screen.ArcaneConsoleScreenHandler;
 import dev.mariany.arcanehand.util.AHHelper;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
+import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableTextContent;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -122,28 +129,14 @@ public class ArcaneConsoleScreen extends HandledScreen<ArcaneConsoleScreenHandle
                             int placedY = this.getOptionsY() + row * OPTION_HEIGHT;
 
                             if (isOptionHighlighted(mouseX, mouseY, this.getOptionsX(), placedY)) {
-                                RegistryKey<Enchantment> enchantmentKey = enchantments.get(i).getKey();
                                 EnchantmentProgression progress = enchantments.get(i).getValue();
 
                                 boolean drawn = enchantmentRegistry
-                                        .getOptional(enchantmentKey)
+                                        .getOptional(enchantments.get(i).getKey())
                                         .map(enchantment -> {
-                                            TooltipComponent enchantTooltipComponent = TooltipComponent.of(
-                                                    EnchantmentProgression.getEnchantmentText(
-                                                            enchantment,
-                                                            progress
-                                                    ).asOrderedText()
-                                            );
-
-                                            EnchantmentProgressionTooltipComponent progressTooltipComponent =
-                                                    getEnchantmentProgressionTooltipComponent(
-                                                            enchantmentKey,
-                                                            progress
-                                                    );
-
                                             context.drawTooltipImmediately(
                                                     this.textRenderer,
-                                                    List.of(enchantTooltipComponent, progressTooltipComponent),
+                                                    getEnchantmentTooltip(this.textRenderer, enchantment, progress),
                                                     mouseX,
                                                     mouseY,
                                                     HoveredTooltipPositioner.INSTANCE,
@@ -162,6 +155,77 @@ public class ArcaneConsoleScreen extends HandledScreen<ArcaneConsoleScreenHandle
         }
     }
 
+    private static List<TooltipComponent> getEnchantmentTooltip(
+            TextRenderer textRenderer,
+            RegistryEntry<Enchantment> enchantment,
+            EnchantmentProgression progress
+    ) {
+        List<TooltipComponent> tooltip = new ArrayList<>();
+
+        TooltipComponent enchantmentName = TooltipComponent.of(
+                EnchantmentProgression.getEnchantmentText(
+                        enchantment,
+                        progress
+                ).asOrderedText()
+        );
+
+        tooltip.add(enchantmentName);
+
+        enchantment.getKey().ifPresent(
+                enchantmentKey -> {
+                    EnchantmentProgressionTooltipComponent progressTooltip = getEnchantmentProgressionTooltipComponent(
+                            enchantmentKey,
+                            progress
+                    );
+
+                    List<TooltipComponent> enchantmentDescription = getEnchantmentDescription(
+                            textRenderer,
+                            enchantment.value(),
+                            progressTooltip.getWidth(textRenderer)
+                    ).stream()
+                     .map(OrderedText::of)
+                     .map(TooltipComponent::of)
+                     .toList();
+
+                    tooltip.addAll(enchantmentDescription);
+
+                    tooltip.add(
+                            getEnchantmentProgressionTooltipComponent(
+                                    enchantmentKey,
+                                    progress
+                            )
+                    );
+                }
+        );
+
+        return tooltip;
+    }
+
+    private static List<OrderedText> getEnchantmentDescription(
+            TextRenderer textRenderer,
+            Enchantment enchantment,
+            int width
+    ) {
+        Text description = getEnchantmentDescription(enchantment).copy().formatted(Formatting.DARK_GRAY);
+        return textRenderer.wrapLines(description, width);
+    }
+
+    private static Text getEnchantmentDescription(Enchantment enchantment) {
+        if (enchantment.description().getContent() instanceof TranslatableTextContent translatableTextContent) {
+            String enchantmentKey = translatableTextContent.getKey();
+            String abbreviatedDescriptionKey = enchantmentKey + ".desc";
+            String descriptionKey = enchantmentKey + ".description";
+
+            if (!I18n.hasTranslation(descriptionKey) && I18n.hasTranslation(abbreviatedDescriptionKey)) {
+                descriptionKey = abbreviatedDescriptionKey;
+            }
+
+            return Text.translatableWithFallback(descriptionKey, "");
+        }
+
+        return Text.empty();
+    }
+
     private static EnchantmentProgressionTooltipComponent getEnchantmentProgressionTooltipComponent(
             RegistryKey<Enchantment> enchantmentKey,
             EnchantmentProgression progress
@@ -172,7 +236,7 @@ public class ArcaneConsoleScreen extends HandledScreen<ArcaneConsoleScreenHandle
                         0
                 );
 
-        return new EnchantmentProgressionTooltipComponent(singularProgression, false);
+        return new EnchantmentProgressionTooltipComponent(singularProgression, false, -1);
     }
 
     @Override

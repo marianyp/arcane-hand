@@ -1,5 +1,9 @@
 {
   "values": [
+    "minecraft:fire_aspect",
+    "minecraft:fortune",
+    "minecraft:looting",
+    "minecraft:protection",
     "minecraft:sweeping_edge"
   ]
 }

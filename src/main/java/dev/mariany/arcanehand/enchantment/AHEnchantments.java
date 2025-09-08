@@ -9,26 +9,62 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentLevelBasedValue;
 import net.minecraft.enchantment.effect.EnchantmentEffectTarget;
 import net.minecraft.enchantment.effect.entity.IgniteEnchantmentEffect;
+import net.minecraft.enchantment.effect.value.AddEnchantmentEffect;
+import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.loot.condition.DamageSourcePropertiesLootCondition;
+import net.minecraft.loot.condition.EntityPropertiesLootCondition;
+import net.minecraft.loot.context.LootContext;
 import net.minecraft.predicate.entity.DamageSourcePredicate;
+import net.minecraft.predicate.entity.EntityPredicate;
+import net.minecraft.predicate.entity.EntityTypePredicate;
 import net.minecraft.registry.Registerable;
 import net.minecraft.registry.RegistryEntryLookup;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.EnchantmentTags;
 
 public interface AHEnchantments {
+    RegistryKey<Enchantment> ABUNDANCE = of("abundance");
     RegistryKey<Enchantment> BLAZE = of("blaze");
 
     static void bootstrap(Registerable<Enchantment> registry) {
+        RegistryEntryLookup<Enchantment> enchantmentRegistry = registry.getRegistryLookup(RegistryKeys.ENCHANTMENT);
+        RegistryEntryLookup<EntityType<?>> entityRegistry = registry.getRegistryLookup(RegistryKeys.ENTITY_TYPE);
         RegistryEntryLookup<Item> itemRegistry = registry.getRegistryLookup(RegistryKeys.ITEM);
+
+        register(
+                registry,
+                ABUNDANCE,
+                Enchantment.builder(
+                                   Enchantment.definition(
+                                           itemRegistry.getOrThrow(AHTags.Items.GAUNTLET_ENCHANTABLE),
+                                           2,
+                                           3,
+                                           Enchantment.leveledCost(15, 9),
+                                           Enchantment.leveledCost(65, 9),
+                                           4,
+                                           AttributeModifierSlot.MAINHAND
+                                   )
+                           )
+                           .addEffect(
+                                   EnchantmentEffectComponentTypes.EQUIPMENT_DROPS,
+                                   EnchantmentEffectTarget.ATTACKER,
+                                   EnchantmentEffectTarget.VICTIM,
+                                   new AddEnchantmentEffect(EnchantmentLevelBasedValue.linear(0.01F)),
+                                   EntityPropertiesLootCondition.builder(
+                                           LootContext.EntityTarget.ATTACKER, EntityPredicate.Builder.create().type(
+                                                   EntityTypePredicate.create(entityRegistry, EntityType.PLAYER))
+                                   )
+                           )
+                           .exclusiveSet(enchantmentRegistry.getOrThrow(EnchantmentTags.MINING_EXCLUSIVE_SET))
+        );
 
         register(
                 registry,
                 BLAZE,
                 Enchantment.builder(
                                    Enchantment.definition(
-                                           itemRegistry.getOrThrow(AHTags.Items.BLAZE_ENCHANTABLE),
                                            itemRegistry.getOrThrow(AHTags.Items.GAUNTLET_ENCHANTABLE),
                                            2,
                                            1,

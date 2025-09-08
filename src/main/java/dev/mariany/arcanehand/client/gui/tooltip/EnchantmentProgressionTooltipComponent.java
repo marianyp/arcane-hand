@@ -25,13 +25,23 @@ public class EnchantmentProgressionTooltipComponent implements TooltipComponent 
 
     protected final EnchantmentProgressionComponent enchantmentProgression;
     protected final boolean considerDisabled;
+    protected final int offset;
 
     public EnchantmentProgressionTooltipComponent(
             EnchantmentProgressionComponent enchantmentProgression,
             boolean considerDisabled
     ) {
+        this(enchantmentProgression, considerDisabled, 0);
+    }
+
+    public EnchantmentProgressionTooltipComponent(
+            EnchantmentProgressionComponent enchantmentProgression,
+            boolean considerDisabled,
+            int offset
+    ) {
         this.enchantmentProgression = enchantmentProgression;
         this.considerDisabled = considerDisabled;
+        this.offset = offset;
     }
 
     public int getWidth() {
@@ -59,7 +69,7 @@ public class EnchantmentProgressionTooltipComponent implements TooltipComponent 
     @Override
     public void drawItems(TextRenderer textRenderer, int x, int y, int width, int height, DrawContext context) {
         if (!this.enchantmentProgression.isEmpty()) {
-            this.drawProgressBar(x + this.getXMargin(width), y - 1, textRenderer, context);
+            this.drawProgressBar(x + this.getXMargin(width), y - this.offset, textRenderer, context);
         }
     }
 

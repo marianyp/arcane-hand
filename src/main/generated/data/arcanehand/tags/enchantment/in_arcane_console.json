@@ -4,6 +4,7 @@
       "id": "#minecraft:in_enchanting_table",
       "required": false
     },
+    "arcanehand:abundance",
     "arcanehand:blaze"
   ]
 }

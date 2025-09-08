@@ -29,7 +29,6 @@ public class GauntletItem extends Item {
     public static final int DEFAULT_GAUNTLET_COLOR = -6265536;
 
     private static final List<TagKey<Item>> GAUNTLET_ENCHANTABLE = List.of(
-            AHTags.Items.BLAZE_ENCHANTABLE,
             AHTags.Items.GAUNTLET_ENCHANTABLE,
             ItemTags.ARMOR_ENCHANTABLE,
             ItemTags.DURABILITY_ENCHANTABLE,

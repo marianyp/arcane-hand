@@ -31,10 +31,9 @@
     "base": 30,
     "per_level_above_first": 0
   },
-  "primary_items": "#arcanehand:gauntlet_enchantable",
   "slots": [
     "mainhand"
   ],
-  "supported_items": "#arcanehand:blaze_enchantable",
+  "supported_items": "#arcanehand:gauntlet_enchantable",
   "weight": 2
 }
