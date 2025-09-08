@@ -3,9 +3,10 @@ package dev.mariany.arcanehand.item;
 import com.google.common.collect.ImmutableMap;
 import dev.mariany.arcanehand.advancement.criterion.AHCriteria;
 import dev.mariany.arcanehand.component.AHComponents;
-import dev.mariany.arcanehand.component.enchantment.EnchantmentProgression;
-import dev.mariany.arcanehand.component.enchantment.EnchantmentProgressionComponent;
-import dev.mariany.arcanehand.component.enchantment.EnchantmentProgressionState;
+import dev.mariany.arcanehand.enchantment.EnchantmentProgression;
+import dev.mariany.arcanehand.component.type.EnchantmentProgressionComponent;
+import dev.mariany.arcanehand.enchantment.EnchantmentProgressionState;
+import dev.mariany.arcanehand.tag.AHTags;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.DyedColorComponent;
 import net.minecraft.component.type.TooltipDisplayComponent;
@@ -28,9 +29,10 @@ public class GauntletItem extends Item {
     public static final int DEFAULT_GAUNTLET_COLOR = -6265536;
 
     private static final List<TagKey<Item>> GAUNTLET_ENCHANTABLE = List.of(
+            AHTags.Items.BLAZE_ENCHANTABLE,
+            AHTags.Items.GAUNTLET_ENCHANTABLE,
             ItemTags.ARMOR_ENCHANTABLE,
             ItemTags.DURABILITY_ENCHANTABLE,
-            ItemTags.FIRE_ASPECT_ENCHANTABLE,
             ItemTags.MINING_ENCHANTABLE,
             ItemTags.MINING_LOOT_ENCHANTABLE,
             ItemTags.SWORD_ENCHANTABLE,

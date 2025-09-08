@@ -4,6 +4,7 @@ import dev.mariany.arcanehand.advancement.criterion.AHCriteria;
 import dev.mariany.arcanehand.block.AHBlocks;
 import dev.mariany.arcanehand.compat.ClumpsCompat;
 import dev.mariany.arcanehand.component.AHComponents;
+import dev.mariany.arcanehand.component.AHEnchantmentEffectComponents;
 import dev.mariany.arcanehand.item.AHItems;
 import dev.mariany.arcanehand.loot.LootTableModifiers;
 import dev.mariany.arcanehand.packet.AHPackets;
@@ -29,6 +30,7 @@ public class ArcaneHand implements ModInitializer {
         AHStats.bootstrap();
         AHCriteria.bootstrap();
         AHComponents.bootstrap();
+        AHEnchantmentEffectComponents.bootstrap();
         AHItems.bootstrap();
         AHScreenHandlers.bootstrap();
         AHBlocks.bootstrap();

@@ -2,7 +2,7 @@ package dev.mariany.arcanehand.item;
 
 import dev.mariany.arcanehand.ArcaneHand;
 import dev.mariany.arcanehand.component.AHComponents;
-import dev.mariany.arcanehand.component.enchantment.EnchantmentProgressionComponent;
+import dev.mariany.arcanehand.component.type.EnchantmentProgressionComponent;
 import dev.mariany.arcanehand.item.equipment.AHMaterials;
 import dev.mariany.arcanehand.tag.AHTags;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;

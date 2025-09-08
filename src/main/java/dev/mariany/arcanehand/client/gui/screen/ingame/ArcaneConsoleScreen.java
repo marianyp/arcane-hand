@@ -2,8 +2,8 @@ package dev.mariany.arcanehand.client.gui.screen.ingame;
 
 import dev.mariany.arcanehand.ArcaneHand;
 import dev.mariany.arcanehand.client.gui.tooltip.EnchantmentProgressionTooltipComponent;
-import dev.mariany.arcanehand.component.enchantment.EnchantmentProgression;
-import dev.mariany.arcanehand.component.enchantment.EnchantmentProgressionComponent;
+import dev.mariany.arcanehand.enchantment.EnchantmentProgression;
+import dev.mariany.arcanehand.component.type.EnchantmentProgressionComponent;
 import dev.mariany.arcanehand.screen.ArcaneConsoleScreenHandler;
 import dev.mariany.arcanehand.util.AHHelper;
 import net.fabricmc.api.EnvType;

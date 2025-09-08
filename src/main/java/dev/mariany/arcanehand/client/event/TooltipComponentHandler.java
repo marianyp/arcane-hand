@@ -1,7 +1,7 @@
 package dev.mariany.arcanehand.client.event;
 
 import dev.mariany.arcanehand.client.gui.tooltip.EnchantmentProgressionTooltipComponent;
-import dev.mariany.arcanehand.component.enchantment.EnchantmentProgressionComponent;
+import dev.mariany.arcanehand.component.type.EnchantmentProgressionComponent;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.rendering.v1.TooltipComponentCallback;

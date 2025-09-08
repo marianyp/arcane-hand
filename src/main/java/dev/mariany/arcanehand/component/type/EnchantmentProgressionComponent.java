@@ -1,8 +1,9 @@
-package dev.mariany.arcanehand.component.enchantment;
+package dev.mariany.arcanehand.component.type;
 
 import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import dev.mariany.arcanehand.enchantment.EnchantmentProgression;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.component.ComponentsAccess;
 import net.minecraft.component.type.ItemEnchantmentsComponent;
@@ -16,7 +17,6 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.*;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.registry.tag.EnchantmentTags;
 import net.minecraft.text.Text;
 import org.apache.commons.lang3.math.Fraction;
@@ -76,59 +76,64 @@ public record EnchantmentProgressionComponent(
             List<Map.Entry<RegistryKey<Enchantment>, EnchantmentProgression>> entries,
             boolean groupByProgression
     ) {
-        Optional<RegistryEntryList.Named<Enchantment>> optionalOrderList = enchantmentRegistry.getOptional(
-                EnchantmentTags.TOOLTIP_ORDER
-        );
+        final Map<RegistryKey<Enchantment>, Integer> orderMap = new HashMap<>();
 
-        if (optionalOrderList.isPresent()) {
-            RegistryEntryList<Enchantment> orderList = optionalOrderList.get();
+        enchantmentRegistry.getOptional(EnchantmentTags.TOOLTIP_ORDER).ifPresent(namedList -> {
+            int i = 0;
 
-            Map<RegistryKey<Enchantment>, Integer> orderMap = new HashMap<>();
+            for (RegistryEntry<Enchantment> entry : namedList) {
+                Optional<RegistryKey<Enchantment>> optionalKey = entry.getKey();
 
-            int index = 0;
-
-            for (RegistryEntry<Enchantment> entry : orderList) {
-                Optional<RegistryKey<Enchantment>> optionalEnchantmentKey = entry.getKey();
-
-                if (optionalEnchantmentKey.isPresent()) {
-                    orderMap.put(optionalEnchantmentKey.get(), ++index);
+                if (optionalKey.isPresent()) {
+                    orderMap.put(optionalKey.get(), i++);
                 }
             }
+        });
 
-            Comparator<Map.Entry<RegistryKey<Enchantment>, EnchantmentProgression>> comparator = getEntryComparator(
-                    orderMap,
-                    groupByProgression
-            );
+        Comparator<Map.Entry<RegistryKey<Enchantment>, EnchantmentProgression>> comparator =
+                getEntryComparator(orderMap, groupByProgression);
 
-            return entries.stream().sorted(comparator).toList();
-        }
-
-        return entries;
+        return entries.stream().sorted(comparator).toList();
     }
 
     private static @NotNull Comparator<Map.Entry<RegistryKey<Enchantment>, EnchantmentProgression>> getEntryComparator(
             Map<RegistryKey<Enchantment>, Integer> orderMap,
             boolean groupByProgression
     ) {
-        Comparator<Map.Entry<RegistryKey<Enchantment>, EnchantmentProgression>> comparator = Comparator.comparingInt(
-                e -> orderMap.getOrDefault(e.getKey(), Integer.MAX_VALUE)
-        );
+        // Put enchantments present in orderMap before non-present enchantments ones
+        Comparator<Map.Entry<RegistryKey<Enchantment>, EnchantmentProgression>> presence =
+                Comparator.comparingInt(
+                        entry -> orderMap.containsKey(entry.getKey()) ? 0 : 1
+                );
+
+        // Respect the order defined in orderMap (fallback to end if not present)
+        Comparator<Map.Entry<RegistryKey<Enchantment>, EnchantmentProgression>> tagOrder =
+                Comparator.comparingInt(
+                        entry -> orderMap.getOrDefault(
+                                entry.getKey(),
+                                Integer.MAX_VALUE
+                        )
+                );
+
+        // Ensure stable ordering for enchantments not defined in orderMap using their registry id
+        Comparator<Map.Entry<RegistryKey<Enchantment>, EnchantmentProgression>> idTiebreaker =
+                Comparator.comparing(
+                        entry -> entry.getKey().getValue().toString()
+                );
 
         if (groupByProgression) {
-            comparator = Comparator
-                    .comparingInt(
-                            (Map.Entry<RegistryKey<Enchantment>, EnchantmentProgression> entry) ->
-                                    entry.getValue().level() > 0 ? 0 : 1
-                    )
-                    .thenComparingInt(
-                            entry -> orderMap.getOrDefault(
-                                    entry.getKey(),
-                                    Integer.MAX_VALUE
-                            )
+            Comparator<Map.Entry<RegistryKey<Enchantment>, EnchantmentProgression>> progressionBucket =
+                    Comparator.comparingInt(
+                            entry -> entry.getValue().level() > 0 ? 0 : 1
                     );
+
+            return progressionBucket
+                    .thenComparing(presence)
+                    .thenComparing(tagOrder)
+                    .thenComparing(idTiebreaker);
         }
 
-        return comparator;
+        return presence.thenComparing(tagOrder).thenComparing(idTiebreaker);
     }
 
     public static List<Map.Entry<RegistryKey<Enchantment>, EnchantmentProgression>> getSortedEntries(

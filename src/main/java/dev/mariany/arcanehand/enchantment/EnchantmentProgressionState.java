@@ -1,4 +1,4 @@
-package dev.mariany.arcanehand.component.enchantment;
+package dev.mariany.arcanehand.enchantment;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.PacketCodec;

@@ -1,3 +1,4 @@
 // 1.21.8	-999999999-01-01T00:00:00	Arcane Hand/Tags for minecraft:enchantment
 32ad7058629a25acd671315cab8dcc9ad1853c3b data/arcanehand/tags/enchantment/gauntlet_blacklist.json
-b6cece953dadcf32c8162f35d51b5b48ac51f1cf data/arcanehand/tags/enchantment/in_arcane_console.json
+e4b0d99c970342f692f67cf4bc889d91f4c62582 data/arcanehand/tags/enchantment/in_arcane_console.json
+15b771d5668b2815fea28c1d2b408f372f6fc3a6 data/minecraft/tags/enchantment/smelts_loot.json

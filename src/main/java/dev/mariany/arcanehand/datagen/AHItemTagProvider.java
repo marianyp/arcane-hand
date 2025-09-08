@@ -22,9 +22,9 @@ public class AHItemTagProvider extends FabricTagProvider.ItemTagProvider {
     protected void configure(RegistryWrapper.WrapperLookup wrapperLookup) {
         valueLookupBuilder(ItemTags.DYEABLE).add(AHItems.GAUNTLET);
 
-        valueLookupBuilder(AHTags.Items.GAUNTLET_TOOL_MATERIALS)
-                .add(Items.LEATHER);
-
+        valueLookupBuilder(AHTags.Items.GAUNTLET_TOOL_MATERIALS).add(Items.LEATHER);
         valueLookupBuilder(AHTags.Items.ARCANE_CONSOLE_MODIFIABLE).add(AHItems.GAUNTLET);
+        valueLookupBuilder(AHTags.Items.GAUNTLET_ENCHANTABLE).add(AHItems.GAUNTLET);
+        valueLookupBuilder(AHTags.Items.BLAZE_ENCHANTABLE).add(AHItems.GAUNTLET);
     }
 }

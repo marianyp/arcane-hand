@@ -1,10 +1,11 @@
 {
-  "advancements.arcanehand.story.gauntlet.title": "A Reinforced Fist",
   "advancements.arcanehand.story.gauntlet.description": "Obtain a Gauntlet",
-  "advancements.arcanehand.story.level_up.title": "Discovered Potential",
+  "advancements.arcanehand.story.gauntlet.title": "A Reinforced Fist",
   "advancements.arcanehand.story.level_up.description": "Level up an enchantment on your Gauntlet",
+  "advancements.arcanehand.story.level_up.title": "Discovered Potential",
   "block.arcanehand.arcane_console": "Arcane Console",
   "container.arcanehand.arcane_console": "Arcane Console",
+  "enchantment.arcanehand.blaze": "Blaze",
   "item.arcanehand.gauntlet": "Gauntlet",
   "stat.arcanehand.interact_with_arcane_console": "Interactions with Arcane Console",
   "tag.block.arcanehand.gauntlet_mineable": "Gauntlet Mineable",

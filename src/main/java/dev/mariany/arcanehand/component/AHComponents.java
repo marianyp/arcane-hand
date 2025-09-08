@@ -1,15 +1,15 @@
 package dev.mariany.arcanehand.component;
 
 import dev.mariany.arcanehand.ArcaneHand;
-import dev.mariany.arcanehand.component.enchantment.EnchantmentProgressionComponent;
+import dev.mariany.arcanehand.component.type.EnchantmentProgressionComponent;
 import net.fabricmc.fabric.impl.item.ComponentTooltipAppenderRegistryImpl;
 import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 
-public class AHComponents {
-    public static ComponentType<EnchantmentProgressionComponent> ENCHANTMENT_PROGRESSION = register(
+public interface AHComponents {
+    ComponentType<EnchantmentProgressionComponent> ENCHANTMENT_PROGRESSION = register(
             "enchantment_progression",
             ComponentType.<EnchantmentProgressionComponent>builder()
                          .codec(EnchantmentProgressionComponent.CODEC)
@@ -21,7 +21,7 @@ public class AHComponents {
         return Registry.register(Registries.DATA_COMPONENT_TYPE, ArcaneHand.id(name), builder.build());
     }
 
-    public static void bootstrap() {
+    static void bootstrap() {
         ArcaneHand.LOGGER.info("Registering Components for {}", ArcaneHand.MOD_ID);
 
         ComponentTooltipAppenderRegistryImpl.addBefore(DataComponentTypes.ENCHANTMENTS, ENCHANTMENT_PROGRESSION);

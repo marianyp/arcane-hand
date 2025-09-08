@@ -1,5 +1,6 @@
 package dev.mariany.arcanehand.datagen;
 
+import dev.mariany.arcanehand.enchantment.AHEnchantments;
 import dev.mariany.arcanehand.tag.AHTags;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.minecraft.data.tag.EnchantmentTagProvider;
@@ -19,7 +20,10 @@ public class AHEnchantmentTagProvider extends EnchantmentTagProvider {
 
     @Override
     protected void configure(RegistryWrapper.WrapperLookup wrapperLookup) {
+        this.builder(EnchantmentTags.SMELTS_LOOT).add(AHEnchantments.BLAZE);
         this.builder(AHTags.Enchantments.GAUNTLET_BLACKLIST).add(Enchantments.SWEEPING_EDGE);
-        this.builder(AHTags.Enchantments.IN_ARCANE_CONSOLE).addOptionalTag(EnchantmentTags.IN_ENCHANTING_TABLE);
+        this.builder(AHTags.Enchantments.IN_ARCANE_CONSOLE)
+            .addOptionalTag(EnchantmentTags.IN_ENCHANTING_TABLE)
+            .add(AHEnchantments.BLAZE);
     }
 }

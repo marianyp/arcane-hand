@@ -1,4 +1,4 @@
-package dev.mariany.arcanehand.component.enchantment;
+package dev.mariany.arcanehand.enchantment;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;

@@ -1,7 +1,7 @@
 package dev.mariany.arcanehand.mixin;
 
 import dev.mariany.arcanehand.component.AHComponents;
-import dev.mariany.arcanehand.component.enchantment.EnchantmentProgressionComponent;
+import dev.mariany.arcanehand.component.type.EnchantmentProgressionComponent;
 import net.minecraft.component.ComponentsAccess;
 import net.minecraft.component.type.ItemEnchantmentsComponent;
 import net.minecraft.item.Item;

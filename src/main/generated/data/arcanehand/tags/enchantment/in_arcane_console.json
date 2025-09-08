@@ -3,6 +3,7 @@
     {
       "id": "#minecraft:in_enchanting_table",
       "required": false
-    }
+    },
+    "arcanehand:blaze"
   ]
 }

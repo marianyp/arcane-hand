@@ -1,7 +1,7 @@
 package dev.mariany.arcanehand.client.gui.tooltip;
 
 import dev.mariany.arcanehand.ArcaneHand;
-import dev.mariany.arcanehand.component.enchantment.EnchantmentProgressionComponent;
+import dev.mariany.arcanehand.component.type.EnchantmentProgressionComponent;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;

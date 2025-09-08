@@ -4,6 +4,7 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "AnvilScreenHandlerMixin",
+    "BlockMixin",
     "EnchantmentHelperMixin",
     "ExperienceOrbEntityMixin",
     "ItemEnchantmentsComponentMixin",
@@ -20,8 +21,8 @@
     "HandledScreenMixin",
     "HeldItemRendererMixin",
     "ItemModelManagerMixin",
-    "LivingEntityRenderStateMixin",
     "LivingEntityRendererMixin",
+    "LivingEntityRenderStateMixin",
     "MouseTweaksMainMixin",
     "PlayerEntityRendererMixin",
     "accessor.LivingEntityRendererAccessor",
