@@ -3,17 +3,20 @@ package dev.mariany.arcanehand.item;
 import com.google.common.collect.ImmutableMap;
 import dev.mariany.arcanehand.advancement.criterion.AHCriteria;
 import dev.mariany.arcanehand.component.AHComponents;
-import dev.mariany.arcanehand.enchantment.EnchantmentProgression;
 import dev.mariany.arcanehand.component.type.EnchantmentProgressionComponent;
+import dev.mariany.arcanehand.enchantment.EnchantmentProgression;
 import dev.mariany.arcanehand.enchantment.EnchantmentProgressionState;
 import dev.mariany.arcanehand.tag.AHTags;
+import net.minecraft.block.BlockState;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.DyedColorComponent;
 import net.minecraft.component.type.TooltipDisplayComponent;
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipData;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
@@ -22,9 +25,18 @@ import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Style;
+import net.minecraft.text.Text;
+import net.minecraft.text.Texts;
+import net.minecraft.util.Formatting;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 import java.util.*;
+import java.util.function.Consumer;
 
+@SuppressWarnings("deprecation")
 public class GauntletItem extends Item {
     public static final int DEFAULT_GAUNTLET_COLOR = -6265536;
 
@@ -45,6 +57,34 @@ public class GauntletItem extends Item {
     @Override
     public boolean hasGlint(ItemStack stack) {
         return false;
+    }
+
+    @Override
+    public boolean canMine(ItemStack stack, BlockState state, World world, BlockPos pos, LivingEntity user) {
+        return hasNeededDurability(world, pos, stack) && super.canMine(stack, state, world, pos, user);
+    }
+
+    public static boolean hasNeededDurability(World world, BlockPos pos, ItemStack stack) {
+        return world.getBlockState(pos).getHardness(world, pos) <= 0 || !isConsideredBroken(stack);
+    }
+
+    private static boolean isConsideredBroken(ItemStack stack) {
+        return stack.shouldBreak() || stack.willBreakNextUse();
+    }
+
+    @Override
+    public void appendTooltip(
+            ItemStack stack,
+            TooltipContext context,
+            TooltipDisplayComponent displayComponent,
+            Consumer<Text> textConsumer,
+            TooltipType type
+    ) {
+        if (isConsideredBroken(stack)) {
+            MutableText text = Text.translatable("item.arcanehand.gauntlet.broken");
+            Texts.setStyleIfAbsent(text, Style.EMPTY.withColor(Formatting.GRAY).withItalic(true));
+            textConsumer.accept(text);
+        }
     }
 
     @Override

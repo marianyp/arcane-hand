@@ -52,7 +52,12 @@ public class WorldRendererMixin {
                     BlockPos crosshairPos = crosshairTarget.getBlockPos();
 
                     if (BlockBreaker.canHarvest(player, crosshairPos)) {
-                        List<BlockPos> positions = blockBreaker.collectPositions(world, player);
+                        List<BlockPos> positions = blockBreaker.collectPossiblePositions(world, player);
+
+                        if (positions.size() <= 1) {
+                            return;
+                        }
+
                         List<VoxelShape> outlineShapes = new ArrayList<>();
                         outlineShapes.add(VoxelShapes.empty());
 

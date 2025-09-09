@@ -20,7 +20,7 @@ public class ClientTickHandler {
     private static ItemStack previousMainHandItem = DEFAULT_STACK;
     private static ItemStack previousOffHandItem = DEFAULT_STACK;
 
-    public static void register() {
+    public static void bootstrap() {
         ClientTickEvents.END_CLIENT_TICK.register(ClientTickHandler::onClientTick);
     }
 

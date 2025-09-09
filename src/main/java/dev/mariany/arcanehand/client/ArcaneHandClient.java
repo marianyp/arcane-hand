@@ -17,9 +17,9 @@ public class ArcaneHandClient implements ClientModInitializer {
     public void onInitializeClient() {
         AHModels.bootstrap();
         registerScreenHandlers();
-        FeatureRendererRegistrationHandler.register();
-        TooltipComponentHandler.register();
-        ClientTickHandler.register();
+        FeatureRendererRegistrationHandler.bootstrap();
+        TooltipComponentHandler.bootstrap();
+        ClientTickHandler.bootstrap();
     }
 
     private static void registerScreenHandlers() {

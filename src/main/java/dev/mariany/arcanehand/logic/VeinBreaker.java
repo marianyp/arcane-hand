@@ -3,9 +3,7 @@ package dev.mariany.arcanehand.logic;
 import com.google.common.collect.Sets;
 import dev.mariany.arcanehand.component.AHEnchantmentEffectComponents;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.Pair;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -47,14 +45,11 @@ public class VeinBreaker implements BlockBreaker {
                 BlockPos pos = candidate.getLeft();
                 int blockDistance = candidate.getRight();
 
-                if (!world.isInBuildLimit(pos) || shouldStop(player)) {
+                if (!world.isInBuildLimit(pos)) {
                     return positions;
                 }
 
-                BlockState state = world.getBlockState(pos);
-                boolean matches = state.isOf(source);
-
-                if (matches && visited.add(pos) && BlockBreaker.canHarvest(player, pos)) {
+                if (visited.add(pos) && canHarvest(player, pos, source)) {
                     positions.add(pos);
 
                     if (blockDistance < maxVeinSize) {
@@ -67,6 +62,10 @@ public class VeinBreaker implements BlockBreaker {
         }
 
         return positions;
+    }
+
+    private static boolean canHarvest(PlayerEntity player, BlockPos pos, Block source) {
+        return player.getWorld().getBlockState(pos).isOf(source) && BlockBreaker.canHarvest(player, pos);
     }
 
     private static void addValidNeighbors(
@@ -92,12 +91,5 @@ public class VeinBreaker implements BlockBreaker {
             candidates.add(new Pair<>(blockPos.south().west(), distance));
             candidates.add(new Pair<>(blockPos.south().east(), distance));
         }
-    }
-
-    private static boolean shouldStop(PlayerEntity player) {
-        ItemStack stack = player.getMainHandStack();
-        int damage = stack.getDamage();
-        int maxDamage = stack.getMaxDamage();
-        return stack.isDamageable() && (damage == maxDamage || damage == maxDamage - 1);
     }
 }

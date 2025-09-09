@@ -25,6 +25,7 @@
   "enchantment.minecraft.silk_touch.desc": "Allows fragile blocks such as glass to be collected.",
   "enchantment.minecraft.unbreaking.desc": "Causes the item to lose durability at a slower rate.",
   "item.arcanehand.gauntlet": "Gauntlet",
+  "item.arcanehand.gauntlet.broken": "Broken",
   "stat.arcanehand.interact_with_arcane_console": "Interactions with Arcane Console",
   "tag.block.arcanehand.gauntlet_mineable": "Gauntlet Mineable",
   "tag.enchantment.arcanehand.gauntlet_blacklist": "Gauntlet Blacklist",

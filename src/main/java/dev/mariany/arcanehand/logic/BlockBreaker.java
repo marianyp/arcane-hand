@@ -6,6 +6,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.component.ComponentType;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.ToolComponent;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.effect.EnchantmentEffectEntry;
@@ -18,6 +20,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.RaycastContext;
@@ -33,6 +36,25 @@ public interface BlockBreaker {
     VeinBreaker VEIN = new VeinBreaker();
 
     List<BlockPos> collectPositions(World world, PlayerEntity player);
+
+    default List<BlockPos> collectPossiblePositions(World world, PlayerEntity player) {
+        ItemStack stack = player.getMainHandStack();
+        ToolComponent toolComponent = stack.get(DataComponentTypes.TOOL);
+        List<BlockPos> positions = this.collectPositions(world, player);
+
+        if (toolComponent != null) {
+            int remainingDamage = stack.getMaxDamage() - stack.getDamage();
+            int maxBreaks = MathHelper.floor((float) remainingDamage / toolComponent.damagePerBlock()) - 1;
+
+            if (maxBreaks > 0) {
+                return positions.stream().limit(maxBreaks).toList();
+            } else {
+                return List.of();
+            }
+        }
+
+        return positions;
+    }
 
     static Optional<BlockBreaker> getBlockBreaker(PlayerEntity player) {
         if (ExcavatorBreaker.getMineRadius(player) > 0) {
@@ -102,6 +124,12 @@ public interface BlockBreaker {
     static boolean canHarvest(PlayerEntity player, BlockPos pos) {
         World world = player.getWorld();
         BlockState state = world.getBlockState(pos);
+        ItemStack stack = player.getMainHandStack();
+
+        if (stack.shouldBreak() || stack.willBreakNextUse()) {
+            return false;
+        }
+
         return !state.isAir() && player.canHarvest(state) && world.getWorldBorder().contains(pos);
     }
 
@@ -125,7 +153,7 @@ public interface BlockBreaker {
                 List<BlockPos> needsBreaking = new ArrayList<>();
 
                 getBlockBreaker(player).ifPresent(blockBreaker -> needsBreaking.addAll(
-                        blockBreaker.collectPositions(world, player)
+                        blockBreaker.collectPossiblePositions(world, player)
                 ));
 
                 for (BlockPos pos : needsBreaking) {
@@ -134,6 +162,7 @@ public interface BlockBreaker {
 
                     if (player.canHarvest(state) && !state.isAir()) {
                         state.getBlock().onBreak(world, pos, state, player);
+
                         if (!interactionManager.tryBreakBlock(pos)) {
                             continue;
                         }

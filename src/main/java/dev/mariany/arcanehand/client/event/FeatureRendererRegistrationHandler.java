@@ -11,7 +11,7 @@ import net.minecraft.entity.LivingEntity;
 
 @Environment(EnvType.CLIENT)
 public class FeatureRendererRegistrationHandler {
-    public static void register() {
+    public static void bootstrap() {
         LivingEntityFeatureRendererRegistrationCallback.EVENT.register(
                 FeatureRendererRegistrationHandler::registerEntityFeatures
         );
