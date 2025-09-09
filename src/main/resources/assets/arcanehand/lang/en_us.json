@@ -12,6 +12,8 @@
   "enchantment.arcanehand.blaze.desc": "Sets enemies on fire and smelts the drops of blocks.",
   "enchantment.arcanehand.excavate": "Excavate",
   "enchantment.arcanehand.excavate.desc": "Mine multiple blocks in a radius at once.",
+  "enchantment.arcanehand.vein_mining": "Vein Mining",
+  "enchantment.arcanehand.vein_mining.desc": "Breaks matching connected blocks when mining.",
   "enchantment.minecraft.fire_protection.desc": "Reduces the effects of fire damage and the burn time when on fire.",
   "enchantment.minecraft.blast_protection.desc": "Reduces damage from explosions and explosion knockback.",
   "enchantment.minecraft.projectile_protection.desc": "Reduces damage from projectiles such as arrows and tridents.",

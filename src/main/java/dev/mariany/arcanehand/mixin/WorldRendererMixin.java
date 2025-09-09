@@ -1,7 +1,6 @@
 package dev.mariany.arcanehand.mixin;
 
-import dev.mariany.arcanehand.util.AHHelper;
-import dev.mariany.arcanehand.util.BlockBreaker;
+import dev.mariany.arcanehand.logic.BlockBreaker;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -48,12 +47,12 @@ public class WorldRendererMixin {
         ClientWorld world = this.client.world;
 
         if (player != null && world != null) {
-            if (AHHelper.canMineMultipleBlocks(player) && !player.isSneaking()) {
-                if (client.crosshairTarget instanceof BlockHitResult crosshairTarget) {
+            BlockBreaker.getBlockBreaker(player).ifPresent(blockBreaker -> {
+                if (!player.isSneaking() && client.crosshairTarget instanceof BlockHitResult crosshairTarget) {
                     BlockPos crosshairPos = crosshairTarget.getBlockPos();
 
                     if (BlockBreaker.canHarvest(player, crosshairPos)) {
-                        List<BlockPos> positions = BlockBreaker.collectPositions(world, player);
+                        List<BlockPos> positions = blockBreaker.collectPositions(world, player);
                         List<VoxelShape> outlineShapes = new ArrayList<>();
                         outlineShapes.add(VoxelShapes.empty());
 
@@ -92,7 +91,7 @@ public class WorldRendererMixin {
                         ci.cancel();
                     }
                 }
-            }
+            });
         }
     }
 }

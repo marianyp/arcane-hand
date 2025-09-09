@@ -30,6 +30,7 @@ public final class AHTags {
         public static final TagKey<Enchantment> GAUNTLET_BLACKLIST = createTag("gauntlet_blacklist");
         public static final TagKey<Enchantment> IN_ARCANE_CONSOLE = createTag("in_arcane_console");
         public static final TagKey<Enchantment> MATCHES_ABUNDANCE = createTag("matches_abundance");
+        public static final TagKey<Enchantment> MULTI_MINING_EXCLUSIVE_SET = createTag("matches_abundance");
 
         private static TagKey<Enchantment> createTag(String name) {
             return TagKey.of(RegistryKeys.ENCHANTMENT, ArcaneHand.id(name));

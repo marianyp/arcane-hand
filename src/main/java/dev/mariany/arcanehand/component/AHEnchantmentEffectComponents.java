@@ -21,6 +21,13 @@ public interface AHEnchantmentEffectComponents {
                     LootContextTypes.ENCHANTED_ITEM
             ).listOf())
     );
+    ComponentType<List<EnchantmentEffectEntry<EnchantmentValueEffect>>> VEIN_MINE = register(
+            "vein_mine",
+            builder -> builder.codec(EnchantmentEffectEntry.createCodec(
+                    EnchantmentValueEffect.CODEC,
+                    LootContextTypes.ENCHANTED_ITEM
+            ).listOf())
+    );
 
     private static <T> ComponentType<T> register(String name, UnaryOperator<ComponentType.Builder<T>> builderOperator) {
         return Registry.register(

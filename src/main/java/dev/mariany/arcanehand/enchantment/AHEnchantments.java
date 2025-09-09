@@ -28,6 +28,7 @@ public interface AHEnchantments {
     RegistryKey<Enchantment> ABUNDANCE = of("abundance");
     RegistryKey<Enchantment> BLAZE = of("blaze");
     RegistryKey<Enchantment> EXCAVATE = of("excavate");
+    RegistryKey<Enchantment> VEIN_MINING = of("vein_mining");
 
     static void bootstrap(Registerable<Enchantment> registry) {
         RegistryEntryLookup<Enchantment> enchantmentRegistry = registry.getRegistryLookup(RegistryKeys.ENCHANTMENT);
@@ -103,10 +104,29 @@ public interface AHEnchantments {
                            )
                            .addEffect(
                                    AHEnchantmentEffectComponents.MINE_RADIUS,
-                                   new AddEnchantmentEffect(
-                                           EnchantmentLevelBasedValue.linear(1)
+                                   new AddEnchantmentEffect(EnchantmentLevelBasedValue.linear(1))
+                           )
+        );
+
+        register(
+                registry,
+                VEIN_MINING,
+                Enchantment.builder(
+                                   Enchantment.definition(
+                                           itemRegistry.getOrThrow(AHTags.Items.GAUNTLET_ENCHANTABLE),
+                                           2,
+                                           1,
+                                           Enchantment.constantCost(30),
+                                           Enchantment.constantCost(80),
+                                           4,
+                                           AttributeModifierSlot.MAINHAND
                                    )
                            )
+                           .addEffect(
+                                   AHEnchantmentEffectComponents.VEIN_MINE,
+                                   new AddEnchantmentEffect(EnchantmentLevelBasedValue.linear(50))
+                           )
+                           .exclusiveSet(enchantmentRegistry.getOrThrow(AHTags.Enchantments.MULTI_MINING_EXCLUSIVE_SET))
         );
     }
 
