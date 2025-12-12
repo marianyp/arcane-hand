@@ -29,7 +29,7 @@ public class FeatureRendererRegistrationHandler {
             registrationHelper.register(
                     new GauntletFeatureRenderer<>(armorStandEntityRenderer, models)
             );
-        } else if (livingEntityRenderer instanceof PlayerEntityRenderer playerEntityRenderer) {
+        } else if (livingEntityRenderer instanceof PlayerEntityRenderer<?> playerEntityRenderer) {
             registrationHelper.register(
                     new GauntletFeatureRenderer<>(playerEntityRenderer, models)
             );

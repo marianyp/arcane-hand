@@ -55,8 +55,10 @@ public interface AHEnchantments {
                                    EnchantmentEffectTarget.VICTIM,
                                    new AddEnchantmentEffect(EnchantmentLevelBasedValue.linear(0.01F)),
                                    EntityPropertiesLootCondition.builder(
-                                           LootContext.EntityTarget.ATTACKER, EntityPredicate.Builder.create().type(
-                                                   EntityTypePredicate.create(entityRegistry, EntityType.PLAYER))
+                                           LootContext.EntityReference.ATTACKER,
+                                           EntityPredicate.Builder.create().type(
+                                                   EntityTypePredicate.create(entityRegistry, EntityType.PLAYER)
+                                           )
                                    )
                            )
                            .exclusiveSet(enchantmentRegistry.getOrThrow(EnchantmentTags.MINING_EXCLUSIVE_SET))

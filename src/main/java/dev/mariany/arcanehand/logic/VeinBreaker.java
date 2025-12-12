@@ -65,7 +65,7 @@ public class VeinBreaker implements BlockBreaker {
     }
 
     private static boolean canHarvest(PlayerEntity player, BlockPos pos, Block source) {
-        return player.getWorld().getBlockState(pos).isOf(source) && BlockBreaker.canHarvest(player, pos);
+        return player.getEntityWorld().getBlockState(pos).isOf(source) && BlockBreaker.canHarvest(player, pos);
     }
 
     private static void addValidNeighbors(

@@ -10,6 +10,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gl.RenderPipelines;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
@@ -416,7 +417,10 @@ public class ArcaneConsoleScreen extends HandledScreen<ArcaneConsoleScreenHandle
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(Click click, boolean doubled) {
+        final double mouseX = click.x();
+        final double mouseY = click.y();
+
         final int optionsX = this.x + OPTIONS_TOP_LEFT_X;
         final int optionsY = this.y + OPTIONS_TOP_LEFT_Y;
         final int scrollerX = this.x + SCROLLER_TOP_LEFT_X;
@@ -462,14 +466,14 @@ public class ArcaneConsoleScreen extends HandledScreen<ArcaneConsoleScreenHandle
             }
         }
 
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(click, doubled);
     }
 
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+    public boolean mouseDragged(Click click, double offsetX, double offsetY) {
         if (this.mouseClicked && this.shouldScroll()) {
             int top = this.y + SCROLLER_HEIGHT - 1;
-            float mouseOffsetFromCenter = (float) mouseY - top - ((float) SCROLLER_HEIGHT / 2);
+            float mouseOffsetFromCenter = (float) click.y() - top - ((float) SCROLLER_HEIGHT / 2);
             float scrollableHeight = SCROLLER_TRACK_HEIGHT - SCROLLER_HEIGHT;
 
             this.scrollAmount = MathHelper.clamp(mouseOffsetFromCenter / scrollableHeight, 0, 1);
@@ -478,7 +482,7 @@ public class ArcaneConsoleScreen extends HandledScreen<ArcaneConsoleScreenHandle
             return true;
         }
 
-        return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+        return super.mouseDragged(click, offsetX, offsetY);
     }
 
     @Override

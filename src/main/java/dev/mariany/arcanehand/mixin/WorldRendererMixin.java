@@ -7,9 +7,9 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexRendering;
 import net.minecraft.client.render.WorldRenderer;
+import net.minecraft.client.render.state.OutlineRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.Entity;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
@@ -34,12 +34,10 @@ public class WorldRendererMixin {
     private void injectDrawBlockOutline(
             MatrixStack matrices,
             VertexConsumer vertexConsumer,
-            Entity entity,
             double cameraX,
             double cameraY,
             double cameraZ,
-            BlockPos pos,
-            BlockState state,
+            OutlineRenderState state,
             int color,
             CallbackInfo ci
     ) {

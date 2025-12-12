@@ -7,7 +7,7 @@ import dev.mariany.arcanehand.item.GauntletItem;
 import dev.mariany.arcanehand.mixin.accessor.LivingEntityRendererAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
-import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.command.OrderedRenderCommandQueue;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.PlayerEntityRenderer;
@@ -29,12 +29,16 @@ import java.util.List;
 @Mixin(PlayerEntityRenderer.class)
 public abstract class PlayerEntityRendererMixin
         extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityRenderState, PlayerEntityModel> {
-    public PlayerEntityRendererMixin(EntityRendererFactory.Context context, PlayerEntityModel entityModel, float f) {
-        super(context, entityModel, f);
+    public PlayerEntityRendererMixin(
+            EntityRendererFactory.Context context,
+            PlayerEntityModel entityModel,
+            float shadowRadius
+    ) {
+        super(context, entityModel, shadowRadius);
     }
 
     @WrapOperation(
-            method = "getArmPose(Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/item/ItemStack;Lnet/minecraft/util/Hand;)Lnet/minecraft/client/render/entity/model/BipedEntityModel$ArmPose;",
+            method = "getArmPose(Lnet/minecraft/entity/PlayerLikeEntity;Lnet/minecraft/item/ItemStack;Lnet/minecraft/util/Hand;)Lnet/minecraft/client/render/entity/model/BipedEntityModel$ArmPose;",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isEmpty()Z")
     )
     private static boolean wrapGetArmPose(
@@ -50,34 +54,34 @@ public abstract class PlayerEntityRendererMixin
     @Inject(method = "renderRightArm", at = @At("TAIL"))
     private void injectRenderRight(
             MatrixStack matrices,
-            VertexConsumerProvider vertexConsumers,
+            OrderedRenderCommandQueue queue,
             int light,
             Identifier skinTexture,
             boolean sleeveVisible,
             CallbackInfo ci
     ) {
-        PlayerEntityRenderer self = (PlayerEntityRenderer) (Object) this;
-        renderGauntletFeature(self, matrices, vertexConsumers, light, Arm.RIGHT);
+        PlayerEntityRenderer<?> self = (PlayerEntityRenderer<?>) (Object) this;
+        renderGauntletFeature(self, matrices, queue, light, Arm.RIGHT);
     }
 
     @Inject(method = "renderLeftArm", at = @At("TAIL"))
     private void injectRenderLeft(
             MatrixStack matrices,
-            VertexConsumerProvider vertexConsumers,
+            OrderedRenderCommandQueue queue,
             int light,
             Identifier skinTexture,
             boolean sleeveVisible,
             CallbackInfo ci
     ) {
-        PlayerEntityRenderer self = (PlayerEntityRenderer) (Object) this;
-        renderGauntletFeature(self, matrices, vertexConsumers, light, Arm.LEFT);
+        PlayerEntityRenderer<?> self = (PlayerEntityRenderer<?>) (Object) this;
+        renderGauntletFeature(self, matrices, queue, light, Arm.LEFT);
     }
 
     @Unique
     private void renderGauntletFeature(
-            PlayerEntityRenderer renderer,
+            PlayerEntityRenderer<?> renderer,
             MatrixStack matrices,
-            VertexConsumerProvider vertexConsumers,
+            OrderedRenderCommandQueue queue,
             int light,
             Arm arm
     ) {
@@ -93,11 +97,12 @@ public abstract class PlayerEntityRendererMixin
                     if (feature instanceof GauntletFeatureRenderer<?, ?> gauntletFeatureRenderer) {
                         gauntletFeatureRenderer.renderFirstPerson(
                                 matrices,
-                                vertexConsumers,
+                                queue,
                                 itemStack,
                                 light,
                                 arm
                         );
+
                         break;
                     }
                 }

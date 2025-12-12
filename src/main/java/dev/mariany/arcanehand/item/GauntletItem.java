@@ -197,7 +197,7 @@ public class GauntletItem extends Item {
     }
 
     public static int progress(ServerPlayerEntity player, ItemStack stack, int experience) {
-        ServerWorld world = player.getWorld();
+        ServerWorld world = player.getEntityWorld();
         DynamicRegistryManager registryManager = world.getRegistryManager();
         Registry<Enchantment> enchantmentRegistry = registryManager.getOrThrow(RegistryKeys.ENCHANTMENT);
 

@@ -58,7 +58,7 @@ public class ArcaneConsoleScreenHandler extends ScreenHandler {
     public ArcaneConsoleScreenHandler(int syncId, PlayerInventory playerInventory, ScreenHandlerContext context) {
         super(AHScreenHandlers.ARCANE_CONSOLE, syncId);
         this.context = context;
-        this.world = playerInventory.player.getWorld();
+        this.world = playerInventory.player.getEntityWorld();
         this.inputSlot = this.addSlot(new Slot(this.inventory, 0, 17, 47) {
             @Override
             public boolean canInsert(ItemStack stack) {

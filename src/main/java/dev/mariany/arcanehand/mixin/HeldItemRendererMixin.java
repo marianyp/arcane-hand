@@ -5,7 +5,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import dev.mariany.arcanehand.item.GauntletItem;
 import dev.mariany.arcanehand.util.AHHelper;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
-import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.command.OrderedRenderCommandQueue;
 import net.minecraft.client.render.item.HeldItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
@@ -24,7 +24,7 @@ public abstract class HeldItemRendererMixin {
     @Shadow
     protected abstract void renderArmHoldingItem(
             MatrixStack matrices,
-            VertexConsumerProvider vertexConsumers,
+            OrderedRenderCommandQueue queue,
             int light,
             float equipProgress,
             float swingProgress,
@@ -32,7 +32,7 @@ public abstract class HeldItemRendererMixin {
     );
 
     @Inject(
-            method = "renderItem(Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ItemDisplayContext;Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V",
+            method = "renderItem(Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ItemDisplayContext;Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/command/OrderedRenderCommandQueue;I)V",
             at = @At("HEAD"),
             cancellable = true
     )
@@ -41,7 +41,7 @@ public abstract class HeldItemRendererMixin {
             ItemStack stack,
             ItemDisplayContext renderMode,
             MatrixStack matrices,
-            VertexConsumerProvider vertexConsumer,
+            OrderedRenderCommandQueue orderedRenderCommandQueue,
             int light,
             CallbackInfo ci
     ) {
@@ -68,21 +68,21 @@ public abstract class HeldItemRendererMixin {
     )
     private void injectGauntletRender(
             AbstractClientPlayerEntity player,
-            float tickDelta,
+            float tickProgress,
             float pitch,
             Hand hand,
             float swingProgress,
             ItemStack item,
             float equipProgress,
             MatrixStack matrices,
-            VertexConsumerProvider vertexConsumers,
+            OrderedRenderCommandQueue orderedRenderCommandQueue,
             int light,
             CallbackInfo ci
     ) {
         if (GauntletItem.isGauntlet(player.getStackInHand(hand)) && !player.isInvisible() && hand == Hand.OFF_HAND) {
             this.renderArmHoldingItem(
                     matrices,
-                    vertexConsumers,
+                    orderedRenderCommandQueue,
                     light,
                     equipProgress,
                     swingProgress,

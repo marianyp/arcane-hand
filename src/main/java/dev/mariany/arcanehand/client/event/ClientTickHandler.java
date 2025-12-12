@@ -7,10 +7,10 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(EnvType.CLIENT)
@@ -48,12 +48,12 @@ public class ClientTickHandler {
     ) {
         if (previous != null) {
             if (current.isOf(AHItems.GAUNTLET) && !ItemStack.areItemsEqual(current, previous)) {
-                playEquipmentSound(player.clientWorld, player);
+                playEquipmentSound(player.getEntityWorld(), player);
             }
         }
     }
 
-    private static void playEquipmentSound(ClientWorld world, ClientPlayerEntity player) {
+    private static void playEquipmentSound(World world, ClientPlayerEntity player) {
         world.playSound(
                 player,
                 player.getX(),

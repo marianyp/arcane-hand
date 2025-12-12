@@ -9,10 +9,12 @@ import dev.mariany.arcanehand.item.GauntletItem;
 import dev.mariany.arcanehand.mixin.accessor.PlayerEntityModelAccessor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.rendering.v1.ArmorRenderer;
+import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.command.OrderedRenderCommandQueue;
+import net.minecraft.client.render.command.RenderCommandQueue;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
@@ -25,6 +27,9 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 @Environment(EnvType.CLIENT)
 public class GauntletFeatureRenderer<S extends BipedEntityRenderState, M extends BipedEntityModel<S>>
@@ -55,7 +60,7 @@ public class GauntletFeatureRenderer<S extends BipedEntityRenderState, M extends
     @Override
     public void render(
             MatrixStack matrices,
-            VertexConsumerProvider vertexConsumers,
+            OrderedRenderCommandQueue queue,
             int light,
             S state,
             float limbAngle,
@@ -64,39 +69,38 @@ public class GauntletFeatureRenderer<S extends BipedEntityRenderState, M extends
         if (state instanceof EntityWithGauntletRenderState entityWithGauntletRenderState) {
             GauntletRenderState gauntletRenderState = entityWithGauntletRenderState.arcanehand$getGauntletRenderState();
 
-            if (!gauntletRenderState.inMainHand && !gauntletRenderState.inOffHand) {
-                return;
+            if (gauntletRenderState.inMainHand || gauntletRenderState.inOffHand) {
+                matrices.push();
+
+                GauntletEntityModel<S> gauntletModel = this.getUsedModel(this.getContextModel());
+
+                gauntletModel.setVisible(false);
+
+                this.renderArms(gauntletModel, state, gauntletRenderState, queue, matrices, light);
+
+                matrices.pop();
             }
-
-            matrices.push();
-
-            GauntletEntityModel<S> gauntletModel = this.getUsedModel(this.getContextModel());
-
-            gauntletModel.setVisible(false);
-
-            this.renderArms(vertexConsumers, gauntletModel, gauntletRenderState, matrices, light);
-
-            matrices.pop();
         }
     }
 
     public void renderFirstPerson(
             MatrixStack matrices,
-            VertexConsumerProvider vertices,
+            OrderedRenderCommandQueue queue,
             ItemStack stack,
             int light,
             Arm arm
     ) {
-        renderArmWithOverlay(
+        renderArm(
                 getUsedModelFirstPerson(this.getContextModel()),
+                null,
                 matrices,
-                vertices,
+                queue,
+                getUsedTexture(this.getContextModel()),
+                getUsedOverlay(this.getContextModel()),
                 light,
-                arm == Arm.RIGHT,
                 GauntletItem.getColor(stack),
                 stack.hasGlint(),
-                getUsedTexture(this.getContextModel()),
-                getUsedOverlay(this.getContextModel())
+                arm == Arm.RIGHT
         );
     }
 
@@ -125,9 +129,10 @@ public class GauntletFeatureRenderer<S extends BipedEntityRenderState, M extends
     }
 
     private void renderArms(
-            VertexConsumerProvider vertices,
             GauntletEntityModel<S> gauntletModel,
+            S state,
             GauntletRenderState gauntletRenderState,
+            OrderedRenderCommandQueue queue,
             MatrixStack matrices,
             int light
     ) {
@@ -135,92 +140,161 @@ public class GauntletFeatureRenderer<S extends BipedEntityRenderState, M extends
         Identifier overlay = this.getUsedOverlay(this.getContextModel());
 
         if (gauntletRenderState.inMainHand) {
-            renderArmWithOverlay(
+            renderArm(
                     gauntletModel,
+                    state,
                     matrices,
-                    vertices,
+                    queue,
+                    texture,
+                    overlay,
                     light,
-                    gauntletRenderState.mainHandAlignedRight,
                     gauntletRenderState.mainHandColor,
                     gauntletRenderState.mainHandGlinted,
-                    texture,
-                    overlay
+                    gauntletRenderState.mainHandAlignedRight
             );
         }
 
         if (gauntletRenderState.inOffHand) {
-            renderArmWithOverlay(
+            renderArm(
                     gauntletModel,
+                    state,
                     matrices,
-                    vertices,
+                    queue,
+                    texture,
+                    overlay,
                     light,
-                    !gauntletRenderState.mainHandAlignedRight,
                     gauntletRenderState.offHandColor,
                     gauntletRenderState.offHandGlinted,
-                    texture,
-                    overlay
+                    !gauntletRenderState.mainHandAlignedRight
             );
         }
     }
 
-    private void renderArmWithOverlay(
+    private void renderArm(
             GauntletEntityModel<S> gauntletModel,
+            @Nullable S state,
             MatrixStack matrices,
-            VertexConsumerProvider vertices,
+            OrderedRenderCommandQueue queue,
+            Identifier gauntletTexture,
+            Identifier overlayTexture,
             int light,
-            boolean rightArm,
             int color,
             boolean glint,
-            Identifier gauntletTexture,
-            Identifier overlayTexture
+            boolean rightArm
     ) {
-        renderArm(
+        renderModel(
                 gauntletModel,
+                state,
                 matrices,
-                vertices,
+                queue,
+                gauntletTexture,
                 light,
-                rightArm,
                 color,
                 glint,
-                gauntletTexture
+                rightArm
         );
 
-        renderArm(
+        renderModel(
                 gauntletModel,
+                state,
                 matrices,
-                vertices,
+                queue,
+                overlayTexture,
                 light,
-                rightArm,
-                -1,
+                -1, // tint color not applied to overlay
                 glint,
-                overlayTexture
+                rightArm
         );
     }
 
-    private void renderArm(
+    private void renderModel(
             GauntletEntityModel<S> gauntletModel,
+            @Nullable S state,
             MatrixStack matrices,
-            VertexConsumerProvider vertices,
+            OrderedRenderCommandQueue queue,
+            Identifier texture,
             int light,
-            boolean rightArm,
             int color,
             boolean glint,
-            Identifier texture
+            boolean rightArm
+    ) {
+        RenderLayer renderLayer = gauntletModel.getLayer(texture);
+
+        this.submitModel(gauntletModel, renderLayer, matrices, queue, light, color, glint, rightArm);
+
+        if (state != null) {
+            this.submitTransforms(gauntletModel, state, renderLayer, matrices, queue, light, color, rightArm);
+        }
+    }
+
+    private void submitModel(
+            GauntletEntityModel<S> gauntletModel,
+            RenderLayer renderLayer,
+            MatrixStack matrices,
+            OrderedRenderCommandQueue queue,
+            int light,
+            int color,
+            boolean glint,
+            boolean rightArm
     ) {
         this.getContextModel().copyTransforms(gauntletModel);
 
-        VertexConsumer consumer = ItemRenderer.getArmorGlintConsumer(
-                vertices,
-                RenderLayer.getArmorCutoutNoCull(texture),
+        List<RenderLayer> layers = ItemRenderer.getGlintRenderLayers(
+                renderLayer,
+                false,
                 glint
         );
 
+        for (RenderLayer layer : layers) {
+            ModelPart armPart = rightArm ? gauntletModel.rightArm : gauntletModel.leftArm;
+
+            queue.submitModelPart(
+                    armPart,
+                    matrices,
+                    layer,
+                    light,
+                    OverlayTexture.DEFAULT_UV,
+                    null,
+                    color,
+                    null
+            );
+        }
+    }
+
+    private void submitTransforms(
+            GauntletEntityModel<S> gauntletModel,
+            S state,
+            RenderLayer renderLayer,
+            MatrixStack matrices,
+            OrderedRenderCommandQueue queue,
+            int light,
+            int color,
+            boolean rightArm
+    ) {
+        M contextModel = this.getContextModel();
+        RenderCommandQueue renderCommandQueue = queue.getBatchingQueue(0);
+
         if (rightArm) {
             gauntletModel.rightArm.visible = true;
-            gauntletModel.rightArm.render(matrices, consumer, light, OverlayTexture.DEFAULT_UV, color);
         } else {
             gauntletModel.leftArm.visible = true;
-            gauntletModel.leftArm.render(matrices, consumer, light, OverlayTexture.DEFAULT_UV, color);
         }
+
+        ArmorRenderer.submitTransformCopyingModel(
+                contextModel,
+                state,
+                gauntletModel,
+                state,
+                false,
+                renderCommandQueue,
+                matrices,
+                renderLayer,
+                light,
+                OverlayTexture.DEFAULT_UV,
+                color,
+                null,
+                0,
+                null
+        );
     }
 }

@@ -79,7 +79,7 @@ public interface BlockBreaker {
                 rotation.z * blockInteractionRange
         );
 
-        return player.getWorld().raycast(
+        return player.getEntityWorld().raycast(
                 new RaycastContext(
                         cameraPos,
                         rayEnd,
@@ -122,7 +122,7 @@ public interface BlockBreaker {
     }
 
     static boolean canHarvest(PlayerEntity player, BlockPos pos) {
-        World world = player.getWorld();
+        World world = player.getEntityWorld();
         BlockState state = world.getBlockState(pos);
         ItemStack stack = player.getMainHandStack();
 
@@ -144,7 +144,7 @@ public interface BlockBreaker {
 
     static void performBreak(World world, PlayerEntity player) {
         if (player instanceof ServerPlayerEntity serverPlayer) {
-            ServerWorld serverWorld = serverPlayer.getWorld();
+            ServerWorld serverWorld = serverPlayer.getEntityWorld();
             ServerPlayerInteractionManager interactionManager = serverPlayer.interactionManager;
 
             if (serverPlayer.interactionManager instanceof MiningState miningState) {
