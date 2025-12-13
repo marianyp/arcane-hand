@@ -238,13 +238,13 @@ public class GauntletItem extends Item {
                     progression.put(enchantmentKey, progress);
                     ++skipped;
                 } else {
-                    int previousExperience = progress.earnedExperience();
-                    int target = progress.getUpgradeCost(enchantmentDefinition);
+                    int earnedExperience = progress.earnedExperience();
+                    int cost = progress.getUpgradeCost(enchantmentDefinition);
+
                     int consumed;
 
-                    if (remaining >= target - previousExperience) {
-                        consumed = target - previousExperience;
-                        remaining -= consumed;
+                    if (remaining >= cost - earnedExperience) {
+                        consumed = cost - earnedExperience;
 
                         progression.put(
                                 enchantmentKey,
@@ -258,15 +258,16 @@ public class GauntletItem extends Item {
                         AHCriteria.LEVELED_UP.trigger(player);
                     } else {
                         consumed = remaining;
+                        remaining = 0;
+
                         progression.put(
                                 enchantmentKey,
                                 new EnchantmentProgression(
                                         level,
-                                        previousExperience + consumed,
+                                        earnedExperience + consumed,
                                         EnchantmentProgressionState.ENABLED
                                 )
                         );
-                        remaining = 0;
                     }
 
                     remaining = Math.max(0, remaining - consumed);
