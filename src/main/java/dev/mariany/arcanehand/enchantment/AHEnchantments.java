@@ -29,6 +29,7 @@ public interface AHEnchantments {
     RegistryKey<Enchantment> BLAZE = of("blaze");
     RegistryKey<Enchantment> EXCAVATE = of("excavate");
     RegistryKey<Enchantment> VEIN_MINING = of("vein_mining");
+    RegistryKey<Enchantment> COLLECT = of("collect");
 
     static void bootstrap(Registerable<Enchantment> registry) {
         RegistryEntryLookup<Enchantment> enchantmentRegistry = registry.getRegistryLookup(RegistryKeys.ENCHANTMENT);
@@ -129,6 +130,23 @@ public interface AHEnchantments {
                                    new AddEnchantmentEffect(EnchantmentLevelBasedValue.linear(50))
                            )
                            .exclusiveSet(enchantmentRegistry.getOrThrow(AHTags.Enchantments.MULTI_MINING_EXCLUSIVE_SET))
+        );
+
+        register(
+                registry,
+                COLLECT,
+                Enchantment.builder(
+                                   Enchantment.definition(
+                                           itemRegistry.getOrThrow(AHTags.Items.GAUNTLET_ENCHANTABLE),
+                                           2,
+                                           1,
+                                           Enchantment.constantCost(30),
+                                           Enchantment.constantCost(80),
+                                           4,
+                                           AttributeModifierSlot.MAINHAND
+                                   )
+                           )
+                           .addEffect(AHEnchantmentEffectComponents.COLLECT)
         );
     }
 

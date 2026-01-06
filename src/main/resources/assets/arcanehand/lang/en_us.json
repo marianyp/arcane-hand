@@ -10,6 +10,8 @@
   "enchantment.arcanehand.abundance.desc": "Mobs and blocks have a chance to drop more loot.",
   "enchantment.arcanehand.blaze": "Blaze",
   "enchantment.arcanehand.blaze.desc": "Sets enemies on fire and smelts the drops of blocks.",
+  "enchantment.arcanehand.collect": "Collect",
+  "enchantment.arcanehand.collect.desc": "Directly inserts mined blocks into your inventory.",
   "enchantment.arcanehand.excavate": "Excavate",
   "enchantment.arcanehand.excavate.desc": "Mine multiple blocks in a radius at once.",
   "enchantment.arcanehand.vein_mining": "Vein Mining",

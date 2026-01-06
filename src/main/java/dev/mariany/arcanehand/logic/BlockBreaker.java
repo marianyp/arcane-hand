@@ -185,14 +185,14 @@ public interface BlockBreaker {
                             if (!player.isCreative()) {
                                 ItemStack stack = player.getMainHandStack();
 
-                                Block.getDroppedStacks(
+                                Block.dropStacks(
                                         state,
                                         serverWorld,
                                         pos,
                                         blockEntity,
                                         player,
                                         stack
-                                ).forEach(drop -> Block.dropStack(world, pos, drop));
+                                );
 
                                 state.onStacksDropped(serverWorld, pos, stack, true);
                                 stack.postMine(world, state, pos, player);

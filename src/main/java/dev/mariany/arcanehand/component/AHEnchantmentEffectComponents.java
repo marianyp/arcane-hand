@@ -14,6 +14,7 @@ import java.util.function.UnaryOperator;
 
 public interface AHEnchantmentEffectComponents {
     ComponentType<Unit> SMELT_DROPS = register("smelt_drops", builder -> builder.codec(Unit.CODEC));
+    ComponentType<Unit> COLLECT = register("collect", builder -> builder.codec(Unit.CODEC));
     ComponentType<List<EnchantmentEffectEntry<EnchantmentValueEffect>>> MINE_RADIUS = register(
             "mine_radius",
             builder -> builder.codec(EnchantmentEffectEntry.createCodec(

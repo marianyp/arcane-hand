@@ -37,6 +37,7 @@ public class AHEnchantmentTagProvider extends EnchantmentTagProvider {
             .addOptionalTag(EnchantmentTags.IN_ENCHANTING_TABLE)
             .add(AHEnchantments.ABUNDANCE)
             .add(AHEnchantments.BLAZE)
+            .add(AHEnchantments.COLLECT)
             .add(AHEnchantments.EXCAVATE)
             .add(AHEnchantments.VEIN_MINING);
 

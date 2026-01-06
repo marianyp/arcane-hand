@@ -1,11 +1,13 @@
 package dev.mariany.arcanehand.mixin;
 
 import dev.mariany.arcanehand.component.AHEnchantmentEffectComponents;
+import dev.mariany.arcanehand.logic.SelfInserting;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.recipe.RecipeType;
@@ -13,10 +15,12 @@ import net.minecraft.recipe.SmeltingRecipe;
 import net.minecraft.recipe.input.SingleStackRecipeInput;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.ArrayList;
@@ -66,5 +70,27 @@ public class BlockMixin {
         }
 
         cir.setReturnValue(drops);
+    }
+
+    @Inject(
+            method = "dropStacks(Lnet/minecraft/block/BlockState;Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/entity/BlockEntity;Lnet/minecraft/entity/Entity;Lnet/minecraft/item/ItemStack;)V",
+            at = @At(value = "HEAD"),
+            cancellable = true
+    )
+    private static void injectDropStacks(
+            BlockState state,
+            World world,
+            BlockPos pos,
+            BlockEntity blockEntity,
+            Entity entity,
+            ItemStack tool,
+            CallbackInfo ci
+    ) {
+        boolean collectPresent = EnchantmentHelper.hasAnyEnchantmentsWith(tool, AHEnchantmentEffectComponents.COLLECT);
+
+        if (collectPresent && entity instanceof PlayerEntity player) {
+            SelfInserting.insert(world, player, pos, state, tool);
+            ci.cancel();
+        }
     }
 }
