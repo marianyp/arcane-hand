@@ -24,14 +24,17 @@ public class AHModels {
                 GAUNTLET,
                 () -> GauntletEntityModel.getTexturedModelData(new Dilation(0.6F), false)
         );
+
         EntityModelLayerRegistry.registerModelLayer(
                 GAUNTLET_SLIM,
                 () -> GauntletEntityModel.getTexturedModelData(new Dilation(0.6F), true)
         );
+
         EntityModelLayerRegistry.registerModelLayer(
                 GAUNTLET_FIRST_PERSON,
                 () -> GauntletEntityModel.getTexturedModelData(new Dilation(0.25F), false)
         );
+
         EntityModelLayerRegistry.registerModelLayer(
                 GAUNTLET_FIRST_PERSON_SLIM,
                 () -> GauntletEntityModel.getTexturedModelData(new Dilation(0.25F), true)

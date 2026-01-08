@@ -66,6 +66,10 @@ public class GauntletFeatureRenderer<S extends BipedEntityRenderState, M extends
             float limbAngle,
             float limbDistance
     ) {
+        if (!ArcaneHand.getConfig().renderThirdPerson) {
+            return;
+        }
+
         if (state instanceof EntityWithGauntletRenderState entityWithGauntletRenderState) {
             GauntletRenderState gauntletRenderState = entityWithGauntletRenderState.arcanehand$getGauntletRenderState();
 
@@ -90,6 +94,10 @@ public class GauntletFeatureRenderer<S extends BipedEntityRenderState, M extends
             int light,
             Arm arm
     ) {
+        if (!ArcaneHand.getConfig().renderFirstPerson) {
+            return;
+        }
+
         renderArm(
                 getUsedModelFirstPerson(this.getContextModel()),
                 null,
@@ -285,7 +293,7 @@ public class GauntletFeatureRenderer<S extends BipedEntityRenderState, M extends
                 state,
                 gauntletModel,
                 state,
-                false,
+                true,
                 renderCommandQueue,
                 matrices,
                 renderLayer,
