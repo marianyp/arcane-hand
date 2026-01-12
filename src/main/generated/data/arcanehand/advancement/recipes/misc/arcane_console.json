@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_arcane_console": {
+      "conditions": {
+        "items": [
+          {
+            "items": "arcanehand:arcane_console"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "arcanehand:arcane_console"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_arcane_console"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "arcanehand:arcane_console"
+    ]
+  }
+}

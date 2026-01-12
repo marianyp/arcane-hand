@@ -34,7 +34,7 @@ public class PlayerInteractionManagerMixin implements MiningState {
     )
     private void tryBreak(BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
         if (BlockBreaker.getBlockBreaker(player).isPresent()) {
-            if (isMining || BlockBreaker.attemptBreak(world, pos, player)) {
+            if (this.isMining || BlockBreaker.attemptBreak(world, pos, player)) {
                 cir.setReturnValue(true);
             }
         }

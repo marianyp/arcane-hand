@@ -1,5 +1,8 @@
 package dev.mariany.arcanehand.mixin;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Local;
 import dev.mariany.arcanehand.component.AHEnchantmentEffectComponents;
 import dev.mariany.arcanehand.logic.SelfInserting;
 import net.minecraft.block.Block;
@@ -20,12 +23,12 @@ import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 @Mixin(Block.class)
 public class BlockMixin {
@@ -72,25 +75,31 @@ public class BlockMixin {
         cir.setReturnValue(drops);
     }
 
-    @Inject(
+    @WrapOperation(
             method = "dropStacks(Lnet/minecraft/block/BlockState;Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/entity/BlockEntity;Lnet/minecraft/entity/Entity;Lnet/minecraft/item/ItemStack;)V",
-            at = @At(value = "HEAD"),
-            cancellable = true
+            at = @At(
+                    value = "INVOKE",
+                    target = "Ljava/util/List;forEach(Ljava/util/function/Consumer;)V"
+            )
     )
-    private static void injectDropStacks(
-            BlockState state,
-            World world,
-            BlockPos pos,
-            BlockEntity blockEntity,
-            Entity entity,
-            ItemStack tool,
-            CallbackInfo ci
+    private static void wrapDropStacks(
+            List<?> instance,
+            Consumer<?> consumer,
+            Operation<Void> original,
+            @Local(index = 0, argsOnly = true) BlockState state,
+            @Local(index = 1, argsOnly = true) World world,
+            @Local(index = 2, argsOnly = true) BlockPos pos,
+            @Local(index = 3, argsOnly = true) @Nullable BlockEntity blockEntity,
+            @Local(index = 4, argsOnly = true) @Nullable Entity entity,
+            @Local(index = 5, argsOnly = true) ItemStack tool
     ) {
-        boolean collectPresent = EnchantmentHelper.hasAnyEnchantmentsWith(tool, AHEnchantmentEffectComponents.COLLECT);
-
-        if (collectPresent && entity instanceof PlayerEntity player) {
-            SelfInserting.insert(world, player, pos, state, tool);
-            ci.cancel();
+        if (entity instanceof PlayerEntity player) {
+            if (EnchantmentHelper.hasAnyEnchantmentsWith(tool, AHEnchantmentEffectComponents.COLLECT)) {
+                SelfInserting.insert(world, player, pos, state, blockEntity, tool);
+                return;
+            }
         }
+
+        original.call(instance, consumer);
     }
 }

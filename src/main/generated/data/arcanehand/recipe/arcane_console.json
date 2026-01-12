@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": "arcanehand:arcane_console",
+    "C": "minecraft:chiseled_stone_bricks"
+  },
+  "pattern": [
+    "CCC",
+    "CAC",
+    "CCC"
+  ],
+  "result": {
+    "count": 9,
+    "id": "arcanehand:arcane_console"
+  }
+}
