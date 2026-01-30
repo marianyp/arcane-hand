@@ -52,12 +52,12 @@ public record DynamicMaterial(
 
     public ToolMaterial asToolMaterial() {
         return new ToolMaterial(
-                incorrectBlocksForDrops,
-                durability,
-                speed,
-                attackDamageBonus,
-                enchantmentValue,
-                repairItems
+                this.incorrectBlocksForDrops,
+                this.durability,
+                this.speed,
+                this.attackDamageBonus,
+                this.enchantmentValue,
+                this.repairItems
         );
     }
 

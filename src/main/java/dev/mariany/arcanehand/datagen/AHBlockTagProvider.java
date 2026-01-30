@@ -23,7 +23,9 @@ public class AHBlockTagProvider extends FabricTagProvider.BlockTagProvider {
                 .addOptionalTag(BlockTags.SHOVEL_MINEABLE)
                 .addOptionalTag(BlockTags.PICKAXE_MINEABLE)
                 .addOptionalTag(BlockTags.AXE_MINEABLE)
-                .addOptionalTag(BlockTags.HOE_MINEABLE);
+                .addOptionalTag(BlockTags.HOE_MINEABLE)
+                .addOptionalTag(BlockTags.LEAVES)
+                .addOptionalTag(BlockTags.WOOL);
 
         valueLookupBuilder(BlockTags.PICKAXE_MINEABLE).add(AHBlocks.ARCANE_CONSOLE);
         valueLookupBuilder(BlockTags.PICKAXE_MINEABLE).add(AHBlocks.ARCANE_CONSOLE);

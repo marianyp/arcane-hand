@@ -15,6 +15,14 @@
     {
       "id": "#minecraft:mineable/hoe",
       "required": false
+    },
+    {
+      "id": "#minecraft:leaves",
+      "required": false
+    },
+    {
+      "id": "#minecraft:wool",
+      "required": false
     }
   ]
 }
