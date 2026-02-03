@@ -3,6 +3,7 @@ package dev.mariany.arcanehand.event;
 import dev.mariany.arcanehand.item.GauntletItem;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -21,7 +22,9 @@ public class AttackBlockHandler {
             BlockPos pos,
             Direction direction
     ) {
-        if(!GauntletItem.hasNeededDurability(world, pos, player.getStackInHand(hand))) {
+        ItemStack stack = player.getStackInHand(hand);
+
+        if (stack.getItem() instanceof GauntletItem && !GauntletItem.hasNeededDurability(world, pos, stack)) {
             return ActionResult.FAIL;
         }
 

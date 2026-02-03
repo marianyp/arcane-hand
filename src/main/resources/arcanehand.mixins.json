@@ -9,7 +9,7 @@
     "ExperienceOrbEntityMixin",
     "ItemEnchantmentsComponentMixin",
     "LivingEntityMixin",
-    "PlayerInteractionManagerMixin",
+    "ServerPlayerInteractionManagerMixin",
     "accessor.EntityAccessor"
   ],
   "injectors": {

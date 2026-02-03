@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ServerPlayerInteractionManager.class)
-public class PlayerInteractionManagerMixin implements MiningState {
+public class ServerPlayerInteractionManagerMixin implements MiningState {
     @Final
     @Shadow
     protected ServerPlayerEntity player;
@@ -33,8 +33,8 @@ public class PlayerInteractionManagerMixin implements MiningState {
             cancellable = true
     )
     private void tryBreak(BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
-        if (BlockBreaker.getBlockBreaker(player).isPresent()) {
-            if (this.isMining || BlockBreaker.attemptBreak(world, pos, player)) {
+        if (BlockBreaker.getBlockBreaker(this.player).isPresent()) {
+            if (this.isMining || BlockBreaker.attemptBreak(this.world, pos, this.player)) {
                 cir.setReturnValue(true);
             }
         }
