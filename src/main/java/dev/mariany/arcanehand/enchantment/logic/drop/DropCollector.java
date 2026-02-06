@@ -39,7 +39,7 @@ public final class DropCollector {
     ) {
         if (entity instanceof PlayerEntity player) {
             if (canCollect(tool)) {
-                DropCollector.collect(player, stacks, consumer);
+                collect(player, stacks, consumer);
                 return true;
             }
         }
