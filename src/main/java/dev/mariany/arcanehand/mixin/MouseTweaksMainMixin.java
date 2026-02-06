@@ -2,10 +2,9 @@ package dev.mariany.arcanehand.mixin;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import dev.mariany.arcanehand.component.AHComponents;
+import dev.mariany.arcanehand.compat.MouseTweaksCompat;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.injection.At;
@@ -21,10 +20,6 @@ public class MouseTweaksMainMixin {
             at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;getItem()Lnet/minecraft/item/Item;")
     )
     private static Item arcanehand$injectionMouseScrolled(ItemStack stack, Operation<Item> original) {
-        if (stack.contains(AHComponents.ENCHANTMENT_PROGRESSION)) {
-            return original.call(Items.BUNDLE.getDefaultStack());
-        }
-
-        return original.call(stack);
+        return original.call(MouseTweaksCompat.interceptOnMouseScrolled(stack));
     }
 }

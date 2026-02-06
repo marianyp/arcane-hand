@@ -13,7 +13,7 @@ import net.minecraft.util.Identifier;
 
 import java.util.List;
 
-public class LootTableModifiers {
+public final class LootTableModifiers {
     private static final List<RegistryKey<LootTable>> LOOT_TABLES = List.of(
             LootTables.BASTION_BRIDGE_CHEST,
             LootTables.BASTION_HOGLIN_STABLE_CHEST,
@@ -21,6 +21,9 @@ public class LootTableModifiers {
     );
 
     private static final List<RegistryKey<LootTable>> CONSTANT_LOOT_TABLES = List.of(LootTables.BASTION_TREASURE_CHEST);
+
+    private LootTableModifiers() {
+    }
 
     public static void modifyLootTables() {
         LootTableEvents.MODIFY.register(

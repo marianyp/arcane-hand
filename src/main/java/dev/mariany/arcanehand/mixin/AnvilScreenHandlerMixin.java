@@ -20,7 +20,7 @@ public class AnvilScreenHandlerMixin {
             )
     )
     public <T> T updateResult(ItemStack stack, ComponentType<T> type, @Nullable T value, Operation<T> original) {
-        if (GauntletItem.isGauntlet(stack)) {
+        if (GauntletItem.hasNoRepairCost(stack)) {
             return original.call(stack, type, 0);
         }
 

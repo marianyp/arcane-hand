@@ -2,7 +2,7 @@
   "parent": "arcanehand:story/gauntlet",
   "criteria": {
     "leveled_up": {
-      "trigger": "arcanehand:leveled_up"
+      "trigger": "arcanehand:gauntlet_leveled_up"
     }
   },
   "display": {

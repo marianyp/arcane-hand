@@ -5,7 +5,6 @@ import dev.mariany.arcanehand.client.gui.tooltip.EnchantmentProgressionTooltipCo
 import dev.mariany.arcanehand.component.type.EnchantmentProgressionComponent;
 import dev.mariany.arcanehand.enchantment.EnchantmentProgression;
 import dev.mariany.arcanehand.screen.ArcaneConsoleScreenHandler;
-import dev.mariany.arcanehand.util.AHHelper;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.font.TextRenderer;
@@ -413,7 +412,7 @@ public class ArcaneConsoleScreen extends HandledScreen<ArcaneConsoleScreenHandle
     }
 
     private boolean isOptionHighlighted(double mouseX, double mouseY, int optionX, int optionY) {
-        return AHHelper.pointInRect(mouseX, mouseY, optionX, optionY, OPTION_WIDTH, OPTION_HEIGHT);
+        return pointInRect(mouseX, mouseY, optionX, optionY, OPTION_WIDTH, OPTION_HEIGHT);
     }
 
     @Override
@@ -451,7 +450,7 @@ public class ArcaneConsoleScreen extends HandledScreen<ArcaneConsoleScreenHandle
                 }
 
                 if (
-                        AHHelper.pointInRect(
+                        pointInRect(
                                 mouseX,
                                 mouseY,
                                 scrollerX,
@@ -510,5 +509,9 @@ public class ArcaneConsoleScreen extends HandledScreen<ArcaneConsoleScreenHandle
 
     private int getAvailableEnchantmentsCount() {
         return this.handler.getSortedAvailableEnchantments().size();
+    }
+
+    private static boolean pointInRect(double pointX, double pointY, int x, int y, int width, int height) {
+        return pointX >= x && pointY >= y && pointX < x + width && pointY < y + height;
     }
 }

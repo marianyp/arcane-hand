@@ -8,6 +8,9 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
 
 public final class AHTags {
+    private AHTags() {
+    }
+
     public static final class Items {
         public static final TagKey<Item> ARCANE_CONSOLE_MODIFIABLE = createTag("arcane_console_modifiable");
         public static final TagKey<Item> GAUNTLET_ENCHANTABLE = createTag("gauntlet_enchantable");

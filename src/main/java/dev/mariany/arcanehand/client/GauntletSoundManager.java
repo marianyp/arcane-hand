@@ -1,6 +1,6 @@
-package dev.mariany.arcanehand.client.event;
+package dev.mariany.arcanehand.client;
 
-import dev.mariany.arcanehand.item.AHItems;
+import dev.mariany.arcanehand.item.GauntletItem;
 import dev.mariany.arcanehand.mixin.accessor.EntityAccessor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -14,17 +14,15 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(EnvType.CLIENT)
-public class ClientTickHandler {
-    private static final ItemStack DEFAULT_STACK = ItemStack.EMPTY;
+public class GauntletSoundManager {
+    private ItemStack previousMainHandItem = ItemStack.EMPTY;
+    private ItemStack previousOffHandItem = ItemStack.EMPTY;
 
-    private static ItemStack previousMainHandItem = DEFAULT_STACK;
-    private static ItemStack previousOffHandItem = DEFAULT_STACK;
-
-    public static void bootstrap() {
-        ClientTickEvents.END_CLIENT_TICK.register(ClientTickHandler::onClientTick);
+    public void bootstrap() {
+        ClientTickEvents.END_CLIENT_TICK.register(this::onClientTick);
     }
 
-    private static void onClientTick(MinecraftClient minecraftClient) {
+    private void onClientTick(MinecraftClient minecraftClient) {
         ClientPlayerEntity player = minecraftClient.player;
 
         if (player != null) {
@@ -32,22 +30,22 @@ public class ClientTickHandler {
             ItemStack offHandItem = player.getOffHandStack();
 
             if (player.isAlive() && !((EntityAccessor) player).arcanehand$firstUpdate()) {
-                checkGauntletChange(previousMainHandItem, mainHandItem, player);
-                checkGauntletChange(previousOffHandItem, offHandItem, player);
+                checkGauntletChange(this.previousMainHandItem, mainHandItem, player);
+                checkGauntletChange(this.previousOffHandItem, offHandItem, player);
             }
 
-            previousMainHandItem = mainHandItem;
-            previousOffHandItem = offHandItem;
+            this.previousMainHandItem = mainHandItem;
+            this.previousOffHandItem = offHandItem;
         }
     }
 
     private static void checkGauntletChange(
-            @Nullable ItemStack previous,
-            ItemStack current,
+            @Nullable ItemStack previousStack,
+            ItemStack currentStack,
             ClientPlayerEntity player
     ) {
-        if (previous != null) {
-            if (current.isOf(AHItems.GAUNTLET) && !ItemStack.areItemsEqual(current, previous)) {
+        if (previousStack != null) {
+            if (GauntletItem.isGauntlet(currentStack) && !ItemStack.areItemsEqual(currentStack, previousStack)) {
                 playEquipmentSound(player.getEntityWorld(), player);
             }
         }

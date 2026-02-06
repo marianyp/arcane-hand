@@ -7,9 +7,12 @@ import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
 
-public class AHScreenHandlers {
+public final class AHScreenHandlers {
     public static final ScreenHandlerType<ArcaneConsoleScreenHandler> ARCANE_CONSOLE =
             register("arcane_console", ArcaneConsoleScreenHandler::new);
+
+    private AHScreenHandlers() {
+    }
 
     private static <T extends ScreenHandler> ScreenHandlerType<T> register(
             String id,
@@ -23,6 +26,6 @@ public class AHScreenHandlers {
     }
 
     public static void bootstrap() {
-        ArcaneHand.LOGGER.info("Registering Screen Handlers for {}", ArcaneHand.MOD_ID);
+        ArcaneHand.bootstrapLog("Screen Handlers");
     }
 }

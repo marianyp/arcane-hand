@@ -2,22 +2,22 @@ package dev.mariany.arcanehand.compat;
 
 import com.blamejared.clumps.api.events.ClumpsEvents;
 import dev.mariany.arcanehand.ArcaneHand;
-import dev.mariany.arcanehand.util.ExperienceOrbHelper;
+import dev.mariany.arcanehand.item.GauntletItem;
 import net.fabricmc.loader.api.FabricLoader;
 
-public class ClumpsCompat {
+public final class ClumpsCompat {
     private static final String MOD_ID = "clumps";
+
+    private ClumpsCompat() {
+    }
 
     public static void bootstrap() {
         if (FabricLoader.getInstance().isModLoaded(MOD_ID)) {
-            ArcaneHand.LOGGER.info("Registering Clumps Mod Compatibility");
+            ArcaneHand.bootstrapLog("Clumps Mod Compatibility");
 
             ClumpsEvents.VALUE_EVENT.register(valueEvent -> {
                 valueEvent.setValue(
-                        ExperienceOrbHelper.handleExperienceCollection(
-                                valueEvent.getPlayer(),
-                                valueEvent.getValue()
-                        )
+                        GauntletItem.handleExperienceCollection(valueEvent.getPlayer(), valueEvent.getValue())
                 );
 
                 return null;

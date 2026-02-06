@@ -24,14 +24,21 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.EnchantmentTags;
 
-public interface AHEnchantments {
-    RegistryKey<Enchantment> ABUNDANCE = of("abundance");
-    RegistryKey<Enchantment> BLAZE = of("blaze");
-    RegistryKey<Enchantment> EXCAVATE = of("excavate");
-    RegistryKey<Enchantment> VEIN_MINING = of("vein_mining");
-    RegistryKey<Enchantment> COLLECT = of("collect");
+public final class AHEnchantments {
+    public static final RegistryKey<Enchantment> ABUNDANCE = of("abundance");
+    public static final RegistryKey<Enchantment> BLAZE = of("blaze");
+    public static final RegistryKey<Enchantment> EXCAVATE = of("excavate");
+    public static final RegistryKey<Enchantment> VEIN_MINING = of("vein_mining");
+    public static final RegistryKey<Enchantment> COLLECT = of("collect");
 
-    static void bootstrap(Registerable<Enchantment> registry) {
+    private AHEnchantments() {
+    }
+
+    private static RegistryKey<Enchantment> of(String id) {
+        return RegistryKey.of(RegistryKeys.ENCHANTMENT, ArcaneHand.id(id));
+    }
+
+    public static void bootstrap(Registerable<Enchantment> registry) {
         RegistryEntryLookup<Enchantment> enchantmentRegistry = registry.getRegistryLookup(RegistryKeys.ENCHANTMENT);
         RegistryEntryLookup<EntityType<?>> entityRegistry = registry.getRegistryLookup(RegistryKeys.ENTITY_TYPE);
         RegistryEntryLookup<Item> itemRegistry = registry.getRegistryLookup(RegistryKeys.ITEM);
@@ -156,9 +163,5 @@ public interface AHEnchantments {
             Enchantment.Builder builder
     ) {
         registry.register(key, builder.build(key.getValue()));
-    }
-
-    private static RegistryKey<Enchantment> of(String id) {
-        return RegistryKey.of(RegistryKeys.ENCHANTMENT, ArcaneHand.id(id));
     }
 }

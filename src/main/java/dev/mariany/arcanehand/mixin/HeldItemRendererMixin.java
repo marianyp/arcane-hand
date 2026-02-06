@@ -3,7 +3,6 @@ package dev.mariany.arcanehand.mixin;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import dev.mariany.arcanehand.item.GauntletItem;
-import dev.mariany.arcanehand.util.AHHelper;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.command.OrderedRenderCommandQueue;
 import net.minecraft.client.render.item.HeldItemRenderer;
@@ -86,7 +85,7 @@ public abstract class HeldItemRendererMixin {
                     light,
                     equipProgress,
                     swingProgress,
-                    AHHelper.getArm(hand, player)
+                    player.getMainArm().getOpposite()
             );
         }
     }

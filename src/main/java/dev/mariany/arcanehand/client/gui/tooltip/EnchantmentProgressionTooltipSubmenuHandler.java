@@ -3,6 +3,8 @@ package dev.mariany.arcanehand.client.gui.tooltip;
 import dev.mariany.arcanehand.component.AHComponents;
 import dev.mariany.arcanehand.item.GauntletItem;
 import dev.mariany.arcanehand.packet.serverbound.EnchantmentSelectedPayload;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.gui.tooltip.TooltipSubmenuHandler;
 import net.minecraft.client.input.Scroller;
@@ -11,6 +13,7 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import org.joml.Vector2i;
 
+@Environment(EnvType.CLIENT)
 public class EnchantmentProgressionTooltipSubmenuHandler implements TooltipSubmenuHandler {
     private final Scroller scroller = new Scroller();
 

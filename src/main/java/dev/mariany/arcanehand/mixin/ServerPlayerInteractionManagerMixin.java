@@ -1,10 +1,9 @@
 package dev.mariany.arcanehand.mixin;
 
-import dev.mariany.arcanehand.logic.BlockBreaker;
+import dev.mariany.arcanehand.enchantment.logic.breaker.BlockBreaker;
 import dev.mariany.arcanehand.server.network.MiningState;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.network.ServerPlayerInteractionManager;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -19,8 +18,7 @@ public class ServerPlayerInteractionManagerMixin implements MiningState {
     @Final
     @Shadow
     protected ServerPlayerEntity player;
-    @Shadow
-    protected ServerWorld world;
+
     @Unique
     private boolean isMining = false;
 
@@ -33,11 +31,14 @@ public class ServerPlayerInteractionManagerMixin implements MiningState {
             cancellable = true
     )
     private void tryBreak(BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
-        if (BlockBreaker.getBlockBreaker(this.player).isPresent()) {
-            if (this.isMining || BlockBreaker.attemptBreak(this.world, pos, this.player)) {
-                cir.setReturnValue(true);
-            }
+        if (BlockBreaker.tryBreak(this.player, pos)) {
+            cir.setReturnValue(true);
         }
+    }
+
+    @Override
+    public boolean arcaneHand$isMining() {
+        return this.isMining;
     }
 
     @Override

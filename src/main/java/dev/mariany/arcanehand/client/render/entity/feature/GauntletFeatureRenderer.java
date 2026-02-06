@@ -1,6 +1,7 @@
 package dev.mariany.arcanehand.client.render.entity.feature;
 
 import dev.mariany.arcanehand.ArcaneHand;
+import dev.mariany.arcanehand.client.ArcaneHandClient;
 import dev.mariany.arcanehand.client.render.entity.model.AHModels;
 import dev.mariany.arcanehand.client.render.entity.model.GauntletEntityModel;
 import dev.mariany.arcanehand.client.render.entity.state.EntityWithGauntletRenderState;
@@ -66,7 +67,7 @@ public class GauntletFeatureRenderer<S extends BipedEntityRenderState, M extends
             float limbAngle,
             float limbDistance
     ) {
-        if (!ArcaneHand.getConfig().renderThirdPerson) {
+        if (!ArcaneHandClient.getConfig().renderThirdPerson) {
             return;
         }
 
@@ -94,7 +95,7 @@ public class GauntletFeatureRenderer<S extends BipedEntityRenderState, M extends
             int light,
             Arm arm
     ) {
-        if (!ArcaneHand.getConfig().renderFirstPerson) {
+        if (!ArcaneHandClient.getConfig().renderFirstPerson) {
             return;
         }
 

@@ -2,29 +2,21 @@ package dev.mariany.arcanehand.mixin;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import dev.mariany.arcanehand.client.render.entity.feature.GauntletFeatureRenderer;
-import dev.mariany.arcanehand.item.GauntletItem;
-import dev.mariany.arcanehand.mixin.accessor.LivingEntityRendererAccessor;
-import net.minecraft.client.MinecraftClient;
+import dev.mariany.arcanehand.client.render.entity.feature.GauntletFeatureRendererHelper;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.command.OrderedRenderCommandQueue;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.PlayerEntityRenderer;
-import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import java.util.List;
 
 @Mixin(PlayerEntityRenderer.class)
 public abstract class PlayerEntityRendererMixin
@@ -44,7 +36,7 @@ public abstract class PlayerEntityRendererMixin
     private static boolean wrapGetArmPose(
             ItemStack stack, Operation<Boolean> original
     ) {
-        if (GauntletItem.isGauntlet(stack)) {
+        if (GauntletFeatureRendererHelper.hasEmptyArmPose(stack)) {
             return true;
         }
 
@@ -61,7 +53,7 @@ public abstract class PlayerEntityRendererMixin
             CallbackInfo ci
     ) {
         PlayerEntityRenderer<?> self = (PlayerEntityRenderer<?>) (Object) this;
-        renderGauntletFeature(self, matrices, queue, light, Arm.RIGHT);
+        GauntletFeatureRendererHelper.renderRightArm(self, matrices, queue, light);
     }
 
     @Inject(method = "renderLeftArm", at = @At("TAIL"))
@@ -74,39 +66,6 @@ public abstract class PlayerEntityRendererMixin
             CallbackInfo ci
     ) {
         PlayerEntityRenderer<?> self = (PlayerEntityRenderer<?>) (Object) this;
-        renderGauntletFeature(self, matrices, queue, light, Arm.LEFT);
-    }
-
-    @Unique
-    private void renderGauntletFeature(
-            PlayerEntityRenderer<?> renderer,
-            MatrixStack matrices,
-            OrderedRenderCommandQueue queue,
-            int light,
-            Arm arm
-    ) {
-        AbstractClientPlayerEntity player = MinecraftClient.getInstance().player;
-
-        if (player != null) {
-            ItemStack itemStack = player.getMainArm() == arm ? player.getMainHandStack() : player.getOffHandStack();
-
-            if (GauntletItem.isGauntlet(itemStack)) {
-                List<FeatureRenderer<?, ?>> features = ((LivingEntityRendererAccessor) renderer).arcanehand$features();
-
-                for (FeatureRenderer<?, ?> feature : features) {
-                    if (feature instanceof GauntletFeatureRenderer<?, ?> gauntletFeatureRenderer) {
-                        gauntletFeatureRenderer.renderFirstPerson(
-                                matrices,
-                                queue,
-                                itemStack,
-                                light,
-                                arm
-                        );
-
-                        break;
-                    }
-                }
-            }
-        }
+        GauntletFeatureRendererHelper.renderLeftArm(self, matrices, queue, light);
     }
 }

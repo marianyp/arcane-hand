@@ -30,6 +30,7 @@ public class AHAdvancementsProvider extends FabricAdvancementProvider {
         super(output, registryLookup);
     }
 
+    @SuppressWarnings("removal")
     @Override
     public void generateAdvancement(RegistryWrapper.WrapperLookup registryLookup, Consumer<AdvancementEntry> consumer) {
         ItemStack levelUpIcon = AHItems.GAUNTLET.getDefaultStack();
@@ -74,7 +75,7 @@ public class AHAdvancementsProvider extends FabricAdvancementProvider {
                 )
                 .criterion(
                         "leveled_up",
-                        AHCriteria.LEVELED_UP.create(new TickCriterion.Conditions(Optional.empty()))
+                        AHCriteria.GAUNTLET_LEVELED_UP.create(new TickCriterion.Conditions(Optional.empty()))
                 )
                 .build(consumer, advancementId("story/level_up"));
     }

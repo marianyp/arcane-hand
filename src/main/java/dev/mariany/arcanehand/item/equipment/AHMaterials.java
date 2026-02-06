@@ -3,7 +3,10 @@ package dev.mariany.arcanehand.item.equipment;
 import dev.mariany.arcanehand.tag.AHTags;
 import net.minecraft.registry.tag.BlockTags;
 
-public class AHMaterials {
+public final class AHMaterials {
+    private AHMaterials() {
+    }
+
     public static final DynamicMaterial GAUNTLET = new DynamicMaterial(
             BlockTags.INCORRECT_FOR_NETHERITE_TOOL,
             AHTags.Items.GAUNTLET_TOOL_MATERIALS,

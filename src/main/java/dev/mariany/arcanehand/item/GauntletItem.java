@@ -13,6 +13,7 @@ import net.minecraft.component.type.DyedColorComponent;
 import net.minecraft.component.type.TooltipDisplayComponent;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipData;
@@ -97,6 +98,14 @@ public class GauntletItem extends Item {
         return tooltipDisplayComponent.shouldDisplay(AHComponents.ENCHANTMENT_PROGRESSION)
                 ? Optional.ofNullable(stack.get(AHComponents.ENCHANTMENT_PROGRESSION))
                 : Optional.empty();
+    }
+
+    public static boolean hasDynamicEquipSound(ItemStack stack) {
+        return isGauntlet(stack);
+    }
+
+    public static boolean hasNoRepairCost(ItemStack stack) {
+        return isGauntlet(stack);
     }
 
     public static boolean isGauntlet(ItemStack stack) {
@@ -196,6 +205,15 @@ public class GauntletItem extends Item {
         stack.set(DataComponentTypes.ENCHANTMENTS, progressionComponent.toEnchantments(dynamicRegistryManager));
     }
 
+    public static int handleExperienceCollection(PlayerEntity player, int amount) {
+        if (player instanceof ServerPlayerEntity serverPlayer) {
+            int mainHandRemainder = progress(serverPlayer, serverPlayer.getMainHandStack(), amount);
+            return progress(serverPlayer, player.getOffHandStack(), mainHandRemainder);
+        }
+
+        return amount;
+    }
+
     public static int progress(ServerPlayerEntity player, ItemStack stack, int experience) {
         ServerWorld world = player.getEntityWorld();
         DynamicRegistryManager registryManager = world.getRegistryManager();
@@ -255,7 +273,7 @@ public class GauntletItem extends Item {
                                 )
                         );
 
-                        AHCriteria.LEVELED_UP.trigger(player);
+                        AHCriteria.GAUNTLET_LEVELED_UP.trigger(player);
                     } else {
                         consumed = remaining;
                         remaining = 0;

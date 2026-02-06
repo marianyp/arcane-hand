@@ -13,6 +13,9 @@ public class AHStats {
             StatFormatter.DEFAULT
     );
 
+    private AHStats() {
+    }
+
     private static Identifier register(String id, StatFormatter formatter) {
         Identifier identifier = ArcaneHand.id(id);
         Registry.register(Registries.CUSTOM_STAT, id, identifier);
@@ -21,6 +24,6 @@ public class AHStats {
     }
 
     public static void bootstrap() {
-        ArcaneHand.LOGGER.info("Registering Stats for {}", ArcaneHand.MOD_ID);
+        ArcaneHand.bootstrapLog("Stats");
     }
 }

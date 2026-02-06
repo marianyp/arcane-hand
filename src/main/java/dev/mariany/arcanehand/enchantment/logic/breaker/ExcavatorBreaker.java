@@ -1,4 +1,4 @@
-package dev.mariany.arcanehand.logic;
+package dev.mariany.arcanehand.enchantment.logic.breaker;
 
 import dev.mariany.arcanehand.component.AHEnchantmentEffectComponents;
 import net.minecraft.entity.player.PlayerEntity;

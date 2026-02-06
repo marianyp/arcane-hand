@@ -1,5 +1,6 @@
 package dev.mariany.arcanehand.event;
 
+import dev.mariany.arcanehand.ArcaneHand;
 import dev.mariany.arcanehand.item.GauntletItem;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.minecraft.entity.player.PlayerEntity;
@@ -10,8 +11,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
-public class AttackBlockHandler {
+public final class AttackBlockHandler {
+    private AttackBlockHandler() {
+    }
+
     public static void bootstrap() {
+        ArcaneHand.bootstrapLog("Attack Block Handler");
+
         AttackBlockCallback.EVENT.register(AttackBlockHandler::onAttackBlock);
     }
 

@@ -6,6 +6,7 @@
     "AnvilScreenHandlerMixin",
     "BlockMixin",
     "EnchantmentHelperMixin",
+    "EntityMixin",
     "ExperienceOrbEntityMixin",
     "ItemEnchantmentsComponentMixin",
     "LivingEntityMixin",

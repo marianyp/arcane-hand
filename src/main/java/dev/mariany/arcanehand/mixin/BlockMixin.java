@@ -3,19 +3,13 @@ package dev.mariany.arcanehand.mixin;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
-import dev.mariany.arcanehand.component.AHEnchantmentEffectComponents;
-import dev.mariany.arcanehand.logic.SelfInserting;
+import dev.mariany.arcanehand.enchantment.logic.drop.DropCollector;
+import dev.mariany.arcanehand.enchantment.logic.drop.DropSmelter;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.RecipeEntry;
-import net.minecraft.recipe.RecipeType;
-import net.minecraft.recipe.SmeltingRecipe;
-import net.minecraft.recipe.input.SingleStackRecipeInput;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -25,9 +19,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Consumer;
 
 @Mixin(Block.class)
@@ -46,33 +38,7 @@ public class BlockMixin {
             ItemStack tool,
             CallbackInfoReturnable<List<ItemStack>> cir
     ) {
-        List<ItemStack> drops = new ArrayList<>();
-        List<ItemStack> originalDrops = cir.getReturnValue();
-
-        if (!EnchantmentHelper.hasAnyEnchantmentsWith(tool, AHEnchantmentEffectComponents.SMELT_DROPS)) {
-            cir.setReturnValue(originalDrops);
-            return;
-        }
-
-        for (ItemStack drop : originalDrops) {
-            SingleStackRecipeInput input = new SingleStackRecipeInput(drop);
-
-            Optional<RecipeEntry<SmeltingRecipe>> recipe = world.getRecipeManager().getFirstMatch(
-                    RecipeType.SMELTING,
-                    input,
-                    world
-            );
-
-            if (recipe.isPresent()) {
-                ItemStack smelted = recipe.get().value().craft(input, world.getRegistryManager()).copy();
-                smelted.setCount(drop.getCount());
-                drops.add(smelted);
-            } else {
-                drops.add(drop);
-            }
-        }
-
-        cir.setReturnValue(drops);
+        cir.setReturnValue(DropSmelter.smeltDrops(world, tool, cir.getReturnValue()));
     }
 
     @WrapOperation(
@@ -84,7 +50,7 @@ public class BlockMixin {
     )
     private static void wrapDropStacks(
             List<ItemStack> stacks,
-            Consumer<?> consumer,
+            Consumer<ItemStack> consumer,
             Operation<Void> original,
             @Local(index = 0, argsOnly = true) BlockState state,
             @Local(index = 1, argsOnly = true) World world,
@@ -93,13 +59,8 @@ public class BlockMixin {
             @Local(index = 4, argsOnly = true) @Nullable Entity entity,
             @Local(index = 5, argsOnly = true) ItemStack tool
     ) {
-        if (entity instanceof PlayerEntity player) {
-            if (EnchantmentHelper.hasAnyEnchantmentsWith(tool, AHEnchantmentEffectComponents.COLLECT)) {
-                SelfInserting.insert(world, player, pos, stacks);
-                return;
-            }
+        if (!DropCollector.collectBlock(entity, tool, stacks, consumer)) {
+            original.call(stacks, consumer);
         }
-
-        original.call(stacks, consumer);
     }
 }

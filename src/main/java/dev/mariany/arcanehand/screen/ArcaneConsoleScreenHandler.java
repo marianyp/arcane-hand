@@ -37,8 +37,8 @@ public class ArcaneConsoleScreenHandler extends ScreenHandler {
 
     private final ScreenHandlerContext context;
     private final World world;
-    Runnable contentsChangedListener = () -> {
-    };
+    private final Slot inputSlot;
+    private final Map<RegistryKey<Enchantment>, EnchantmentProgression> availableEnchantments = new HashMap<>();
     private final Inventory inventory = new SimpleInventory(1) {
         @Override
         public void markDirty() {
@@ -47,9 +47,10 @@ public class ArcaneConsoleScreenHandler extends ScreenHandler {
             ArcaneConsoleScreenHandler.this.contentsChangedListener.run();
         }
     };
-    private final Slot inputSlot;
+
     private ItemStack inputStack = ItemStack.EMPTY;
-    private final Map<RegistryKey<Enchantment>, EnchantmentProgression> availableEnchantments = new HashMap<>();
+    private Runnable contentsChangedListener = () -> {
+    };
 
     public ArcaneConsoleScreenHandler(int syncId, PlayerInventory inventory) {
         this(syncId, inventory, ScreenHandlerContext.EMPTY);

@@ -10,7 +10,10 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 
 @Environment(EnvType.CLIENT)
-public class FeatureRendererRegistrationHandler {
+public final class FeatureRendererRegistrationHandler {
+    private FeatureRendererRegistrationHandler() {
+    }
+
     public static void bootstrap() {
         LivingEntityFeatureRendererRegistrationCallback.EVENT.register(
                 FeatureRendererRegistrationHandler::registerEntityFeatures

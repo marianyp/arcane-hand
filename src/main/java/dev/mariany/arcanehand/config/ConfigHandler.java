@@ -2,50 +2,65 @@ package dev.mariany.arcanehand.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import dev.mariany.arcanehand.ArcaneHand;
+import com.mojang.logging.LogUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
-public class ConfigHandler {
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+public class ConfigHandler<T> {
+    protected static final Logger LOGGER = LogUtils.getLogger();
+    protected static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
-    private final File file;
-    private AHConfig config = new AHConfig();
+    protected final File file;
+    protected final T defaultConfig;
 
-    public ConfigHandler(String id) {
+    @Nullable
+    protected T config;
+
+    public ConfigHandler(String id, @NotNull T defaultConfig) {
+        this.defaultConfig = defaultConfig;
+        this.config = defaultConfig;
         this.file = new File("config/" + id + ".json5");
     }
 
-    public AHConfig getConfig() {
-        return config;
+    public T getConfig() {
+        if (this.config == null) {
+            return this.defaultConfig;
+        }
+
+        return this.config;
     }
 
+    @SuppressWarnings("unchecked")
     public void loadConfig() {
-        if (file.exists()) {
-            try (FileReader reader = new FileReader(file)) {
-                config = GSON.fromJson(reader, AHConfig.class);
+        if (this.file.exists()) {
+            try (FileReader reader = new FileReader(this.file)) {
+                this.config = (T) GSON.fromJson(reader, this.defaultConfig.getClass());
             } catch (IOException error) {
-                ArcaneHand.LOGGER.error("Failed to load config: {}", error.getMessage());
+                this.config = this.defaultConfig;
+                LOGGER.error("Failed to load config: {}", error.getMessage());
             }
         }
 
-        saveConfig();
+        this.saveConfig();
     }
 
-    private void saveConfig() {
+    public void saveConfig() {
         try {
-            if (file.getParentFile().mkdirs()) {
-                ArcaneHand.LOGGER.info("Creating parent directory for {} config", ArcaneHand.MOD_ID);
+            if (this.file.getParentFile().mkdirs()) {
+                LOGGER.info("Creating parent directory for config");
             }
 
-            try (FileWriter writer = new FileWriter(file)) {
-                GSON.toJson(config, writer);
+            try (FileWriter writer = new FileWriter(this.file)) {
+                GSON.toJson(this.config, writer);
             }
         } catch (IOException error) {
-            ArcaneHand.LOGGER.error("Failed to save config: {}", error.getMessage());
+            LOGGER.error("Failed to save config: {}", error.getMessage());
         }
     }
 }

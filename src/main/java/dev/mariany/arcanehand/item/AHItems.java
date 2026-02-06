@@ -18,7 +18,7 @@ import net.minecraft.registry.RegistryKeys;
 
 import java.util.function.Function;
 
-public class AHItems {
+public final class AHItems {
     public static final Item GAUNTLET = register(
             "gauntlet",
             GauntletItem::new,
@@ -34,6 +34,9 @@ public class AHItems {
                     .component(AHComponents.ENCHANTMENT_PROGRESSION, EnchantmentProgressionComponent.DEFAULT)
     );
 
+    private AHItems() {
+    }
+
     private static Item register(String name, Function<Item.Settings, Item> factory, Item.Settings settings) {
         RegistryKey<Item> itemKey = keyOf(name);
         Item item = factory.apply(settings.registryKey(itemKey));
@@ -46,7 +49,7 @@ public class AHItems {
     }
 
     public static void bootstrap() {
-        ArcaneHand.LOGGER.info("Registering Items for {}", ArcaneHand.MOD_ID);
+        ArcaneHand.bootstrapLog("Items");
 
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.TOOLS).register(entries -> {
             entries.addAfter(Items.NETHERITE_HOE, GAUNTLET);

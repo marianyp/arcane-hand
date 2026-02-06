@@ -9,7 +9,10 @@ import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.item.tooltip.TooltipData;
 
 @Environment(EnvType.CLIENT)
-public class TooltipComponentHandler {
+public final class TooltipComponentHandler {
+    private TooltipComponentHandler() {
+    }
+
     public static void bootstrap() {
         TooltipComponentCallback.EVENT.register(TooltipComponentHandler::getComponent);
     }

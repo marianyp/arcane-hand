@@ -1,13 +1,9 @@
 package dev.mariany.arcanehand.mixin;
 
 import dev.mariany.arcanehand.client.render.entity.state.EntityWithGauntletRenderState;
-import dev.mariany.arcanehand.client.render.entity.state.GauntletRenderState;
-import dev.mariany.arcanehand.item.GauntletItem;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.state.LivingEntityRenderState;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Arm;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -26,18 +22,7 @@ public class LivingEntityRendererMixin {
             CallbackInfo ci
     ) {
         if (livingEntityRenderState instanceof EntityWithGauntletRenderState entityWithGauntletRenderState) {
-            GauntletRenderState gauntletRenderState = entityWithGauntletRenderState.arcanehand$getGauntletRenderState();
-
-            ItemStack mainHandStack = livingEntity.getMainHandStack();
-            ItemStack offHandStack = livingEntity.getOffHandStack();
-
-            gauntletRenderState.mainHandAlignedRight = livingEntity.getMainArm().equals(Arm.RIGHT);
-            gauntletRenderState.inMainHand = GauntletItem.isGauntlet(mainHandStack);
-            gauntletRenderState.inOffHand = GauntletItem.isGauntlet(offHandStack);
-            gauntletRenderState.mainHandGlinted = mainHandStack.hasGlint();
-            gauntletRenderState.offHandGlinted = offHandStack.hasGlint();
-            gauntletRenderState.mainHandColor = GauntletItem.getColor(mainHandStack);
-            gauntletRenderState.offHandColor = GauntletItem.getColor(offHandStack);
+            entityWithGauntletRenderState.updateRenderState(livingEntity);
         }
     }
 }

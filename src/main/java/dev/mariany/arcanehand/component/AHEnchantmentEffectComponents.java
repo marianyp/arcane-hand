@@ -12,23 +12,35 @@ import net.minecraft.util.Unit;
 import java.util.List;
 import java.util.function.UnaryOperator;
 
-public interface AHEnchantmentEffectComponents {
-    ComponentType<Unit> SMELT_DROPS = register("smelt_drops", builder -> builder.codec(Unit.CODEC));
-    ComponentType<Unit> COLLECT = register("collect", builder -> builder.codec(Unit.CODEC));
-    ComponentType<List<EnchantmentEffectEntry<EnchantmentValueEffect>>> MINE_RADIUS = register(
+public final class AHEnchantmentEffectComponents {
+    public static final ComponentType<Unit> SMELT_DROPS = register(
+            "smelt_drops",
+            builder -> builder.codec(Unit.CODEC)
+    );
+
+    public static final ComponentType<Unit> COLLECT = register(
+            "collect",
+            builder -> builder.codec(Unit.CODEC)
+    );
+
+    public static final ComponentType<List<EnchantmentEffectEntry<EnchantmentValueEffect>>> MINE_RADIUS = register(
             "mine_radius",
-            builder -> builder.codec(EnchantmentEffectEntry.createCodec(
-                    EnchantmentValueEffect.CODEC,
-                    LootContextTypes.ENCHANTED_ITEM
-            ).listOf())
+            builder -> builder.codec(
+                    EnchantmentEffectEntry.createCodec(EnchantmentValueEffect.CODEC, LootContextTypes.ENCHANTED_ITEM)
+                                          .listOf()
+            )
     );
-    ComponentType<List<EnchantmentEffectEntry<EnchantmentValueEffect>>> VEIN_MINE = register(
+
+    public static final ComponentType<List<EnchantmentEffectEntry<EnchantmentValueEffect>>> VEIN_MINE = register(
             "vein_mine",
-            builder -> builder.codec(EnchantmentEffectEntry.createCodec(
-                    EnchantmentValueEffect.CODEC,
-                    LootContextTypes.ENCHANTED_ITEM
-            ).listOf())
+            builder -> builder.codec(
+                    EnchantmentEffectEntry.createCodec(EnchantmentValueEffect.CODEC, LootContextTypes.ENCHANTED_ITEM)
+                                          .listOf()
+            )
     );
+
+    private AHEnchantmentEffectComponents() {
+    }
 
     private static <T> ComponentType<T> register(String name, UnaryOperator<ComponentType.Builder<T>> builderOperator) {
         return Registry.register(
@@ -38,7 +50,7 @@ public interface AHEnchantmentEffectComponents {
         );
     }
 
-    static void bootstrap() {
-        ArcaneHand.LOGGER.info("Registering Enchantment Effect Components for {}", ArcaneHand.MOD_ID);
+    public static void bootstrap() {
+        ArcaneHand.bootstrapLog("Enchantment Effect Components");
     }
 }

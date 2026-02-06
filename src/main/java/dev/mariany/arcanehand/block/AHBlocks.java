@@ -15,7 +15,7 @@ import net.minecraft.util.Identifier;
 
 import java.util.function.Function;
 
-public class AHBlocks {
+public final class AHBlocks {
     public static final Block ARCANE_CONSOLE = register(
             "arcane_console",
             ArcaneConsoleBlock::new,
@@ -26,6 +26,9 @@ public class AHBlocks {
                                   .strength(5, 6)
                                   .luminance(state -> 7)
     );
+
+    private AHBlocks() {
+    }
 
     private static Block register(
             String name,
@@ -42,7 +45,7 @@ public class AHBlocks {
     }
 
     public static void bootstrap() {
-        ArcaneHand.LOGGER.info("Registering Blocks for {}", ArcaneHand.MOD_ID);
+        ArcaneHand.bootstrapLog("Blocks");
 
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.FUNCTIONAL).register(entries -> {
             entries.addAfter(Items.ENCHANTING_TABLE, ARCANE_CONSOLE);

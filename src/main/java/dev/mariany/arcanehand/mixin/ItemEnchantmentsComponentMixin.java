@@ -3,6 +3,7 @@ package dev.mariany.arcanehand.mixin;
 import dev.mariany.arcanehand.component.AHComponents;
 import dev.mariany.arcanehand.component.type.EnchantmentProgressionComponent;
 import net.minecraft.component.ComponentsAccess;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.ItemEnchantmentsComponent;
 import net.minecraft.item.Item;
 import net.minecraft.item.tooltip.TooltipType;
@@ -16,6 +17,9 @@ import java.util.function.Consumer;
 
 @Mixin(ItemEnchantmentsComponent.class)
 public class ItemEnchantmentsComponentMixin {
+    /**
+     * Prevents unwanted tooltips from appearing such as {@link DataComponentTypes#DYED_COLOR}.
+     */
     @Inject(method = "appendTooltip", at = @At(value = "HEAD"), cancellable = true)
     public void injectAppendTooltip(
             Item.TooltipContext context,

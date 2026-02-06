@@ -2,7 +2,7 @@ package dev.mariany.arcanehand.mixin;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import dev.mariany.arcanehand.util.ExperienceOrbHelper;
+import dev.mariany.arcanehand.item.GauntletItem;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
@@ -26,7 +26,7 @@ public class ExperienceOrbEntityMixin {
         return original.call(
                 experienceOrbEntity,
                 player,
-                ExperienceOrbHelper.handleExperienceCollection(player, amount)
+                GauntletItem.handleExperienceCollection(player, amount)
         );
     }
 }

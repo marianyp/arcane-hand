@@ -4,7 +4,6 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import dev.mariany.arcanehand.item.GauntletItem;
-import dev.mariany.arcanehand.util.AHHelper;
 import net.minecraft.client.item.ItemModelManager;
 import net.minecraft.item.ItemDisplayContext;
 import net.minecraft.item.ItemStack;
@@ -23,12 +22,13 @@ public class ItemModelManagerMixin {
     public boolean wrapClearAndUpdate(
             ItemStack stack,
             Operation<Boolean> original,
-            @Local(index = 3, argsOnly = true) ItemDisplayContext displayContext
+            @Local(index = 3, argsOnly = true) ItemDisplayContext context
     ) {
-        boolean thirdPerson = AHHelper.isThirdPerson(displayContext);
         boolean gauntlet = GauntletItem.isGauntlet(stack);
+        boolean thirdPerson = context.equals(ItemDisplayContext.THIRD_PERSON_LEFT_HAND) ||
+                context.equals(ItemDisplayContext.THIRD_PERSON_RIGHT_HAND);
 
-        if (thirdPerson && gauntlet) {
+        if (gauntlet && thirdPerson) {
             return true;
         }
 

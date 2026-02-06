@@ -29,13 +29,6 @@ public class EnchantmentProgressionTooltipComponent implements TooltipComponent 
 
     public EnchantmentProgressionTooltipComponent(
             EnchantmentProgressionComponent enchantmentProgression,
-            boolean considerDisabled
-    ) {
-        this(enchantmentProgression, considerDisabled, 0);
-    }
-
-    public EnchantmentProgressionTooltipComponent(
-            EnchantmentProgressionComponent enchantmentProgression,
             boolean considerDisabled,
             int offset
     ) {

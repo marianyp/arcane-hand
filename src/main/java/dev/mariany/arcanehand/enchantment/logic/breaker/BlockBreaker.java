@@ -1,4 +1,4 @@
-package dev.mariany.arcanehand.logic;
+package dev.mariany.arcanehand.enchantment.logic.breaker;
 
 import dev.mariany.arcanehand.server.network.MiningState;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
@@ -133,81 +133,85 @@ public interface BlockBreaker {
         return !state.isAir() && player.canHarvest(state) && world.getWorldBorder().contains(pos);
     }
 
-    static boolean attemptBreak(World world, BlockPos pos, PlayerEntity player) {
-        if (!player.isSneaking() && canHarvest(player, pos)) {
-            BlockBreaker.performBreak(world, player);
-            return true;
+    static boolean tryBreak(ServerPlayerEntity player, BlockPos pos) {
+        if (BlockBreaker.getBlockBreaker(player).isPresent()) {
+            if (player.interactionManager instanceof MiningState miningState) {
+                if (miningState.arcaneHand$isMining()) {
+                    return true;
+                }
+
+                if (!player.isSneaking() && canHarvest(player, pos)) {
+                    breakBlocks(player, miningState);
+                    return true;
+                }
+            }
         }
 
         return false;
     }
 
-    static void performBreak(World world, PlayerEntity player) {
-        if (player instanceof ServerPlayerEntity serverPlayer) {
-            ServerWorld serverWorld = serverPlayer.getEntityWorld();
-            ServerPlayerInteractionManager interactionManager = serverPlayer.interactionManager;
+    private static void breakBlocks(ServerPlayerEntity player, MiningState miningState) {
+        ServerWorld serverWorld = player.getEntityWorld();
+        ServerPlayerInteractionManager interactionManager = player.interactionManager;
 
-            if (serverPlayer.interactionManager instanceof MiningState miningState) {
-                miningState.arcaneHand$setIsMining(true);
+        miningState.arcaneHand$setIsMining(true);
 
-                List<BlockPos> needsBreaking = new ArrayList<>();
+        List<BlockPos> needsBreaking = new ArrayList<>();
 
-                getBlockBreaker(player).ifPresent(blockBreaker -> needsBreaking.addAll(
-                        blockBreaker.collectPossiblePositions(world, player)
-                ));
+        getBlockBreaker(player).ifPresent(blockBreaker -> needsBreaking.addAll(
+                blockBreaker.collectPossiblePositions(serverWorld, player)
+        ));
 
-                for (BlockPos pos : needsBreaking) {
-                    BlockState state = world.getBlockState(pos);
-                    BlockEntity blockEntity = state.hasBlockEntity() ? world.getBlockEntity(pos) : null;
+        for (BlockPos pos : needsBreaking) {
+            BlockState state = serverWorld.getBlockState(pos);
+            BlockEntity blockEntity = state.hasBlockEntity() ? serverWorld.getBlockEntity(pos) : null;
 
-                    if (player.canHarvest(state) && !state.isAir()) {
-                        state.getBlock().onBreak(world, pos, state, player);
+            if (player.canHarvest(state) && !state.isAir()) {
+                state.getBlock().onBreak(serverWorld, pos, state, player);
 
-                        if (!interactionManager.tryBreakBlock(pos)) {
-                            continue;
-                        }
+                if (!interactionManager.tryBreakBlock(pos)) {
+                    continue;
+                }
 
-                        boolean shouldContinue = PlayerBlockBreakEvents.BEFORE
-                                .invoker()
-                                .beforeBlockBreak(
-                                        world,
-                                        player,
-                                        pos,
-                                        state,
-                                        world.getBlockEntity(pos)
-                                );
+                boolean shouldContinue = PlayerBlockBreakEvents.BEFORE
+                        .invoker()
+                        .beforeBlockBreak(
+                                serverWorld,
+                                player,
+                                pos,
+                                state,
+                                serverWorld.getBlockEntity(pos)
+                        );
 
-                        if (shouldContinue) {
-                            if (world.removeBlock(pos, false)) {
-                                state.getBlock().onBroken(world, pos, state);
-                            }
+                if (shouldContinue) {
+                    if (serverWorld.removeBlock(pos, false)) {
+                        state.getBlock().onBroken(serverWorld, pos, state);
+                    }
 
-                            if (!player.isCreative()) {
-                                ItemStack stack = player.getMainHandStack();
+                    if (!player.isCreative()) {
+                        ItemStack stack = player.getMainHandStack();
 
-                                Block.dropStacks(
-                                        state,
-                                        serverWorld,
-                                        pos,
-                                        blockEntity,
-                                        player,
-                                        stack
-                                );
+                        Block.dropStacks(
+                                state,
+                                serverWorld,
+                                pos,
+                                blockEntity,
+                                player,
+                                stack
+                        );
 
-                                state.onStacksDropped(serverWorld, pos, stack, true);
-                                stack.postMine(world, state, pos, player);
+                        state.onStacksDropped(serverWorld, pos, stack, true);
+                        stack.postMine(serverWorld, state, pos, player);
 
-                                if (player.canHarvest(state)) {
-                                    player.incrementStat(Stats.MINED.getOrCreateStat(state.getBlock()));
-                                    player.addExhaustion(0.005F);
-                                }
-                            }
+                        if (player.canHarvest(state)) {
+                            player.incrementStat(Stats.MINED.getOrCreateStat(state.getBlock()));
+                            player.addExhaustion(0.005F);
                         }
                     }
                 }
-
-                miningState.arcaneHand$setIsMining(false);
             }
         }
+
+        miningState.arcaneHand$setIsMining(false);
     }
 }

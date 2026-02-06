@@ -23,6 +23,8 @@
     {
       "id": "#minecraft:wool",
       "required": false
-    }
+    },
+    "minecraft:vine",
+    "minecraft:glow_lichen"
   ]
 }

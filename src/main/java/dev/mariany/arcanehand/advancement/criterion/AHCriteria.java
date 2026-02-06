@@ -7,13 +7,16 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 
 public class AHCriteria {
-    public static final TickCriterion LEVELED_UP = register("leveled_up", new TickCriterion());
+    public static final TickCriterion GAUNTLET_LEVELED_UP = register("gauntlet_leveled_up", new TickCriterion());
+
+    private AHCriteria() {
+    }
 
     public static <T extends Criterion<?>> T register(String name, T criterion) {
         return Registry.register(Registries.CRITERION, ArcaneHand.id(name), criterion);
     }
 
     public static void bootstrap() {
-        ArcaneHand.LOGGER.info("Registering Criteria for {}", ArcaneHand.MOD_ID);
+        ArcaneHand.bootstrapLog("Criteria");
     }
 }

@@ -3,7 +3,7 @@ package dev.mariany.arcanehand.mixin;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
-import dev.mariany.arcanehand.item.AHItems;
+import dev.mariany.arcanehand.item.GauntletItem;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
@@ -36,12 +36,10 @@ public class LivingEntityMixin {
             float pitch,
             long seed,
             Operation<Void> original,
-            @Local(index = 3, argsOnly = true) ItemStack newStack
+            @Local(index = 3, argsOnly = true) ItemStack stack
     ) {
-        if (newStack.isOf(AHItems.GAUNTLET)) {
-            return;
+        if (!GauntletItem.hasDynamicEquipSound(stack)) {
+            original.call(world, entity, x, y, z, soundEvent, soundCategory, volume, pitch, seed);
         }
-
-        original.call(world, entity, x, y, z, soundEvent, soundCategory, volume, pitch, seed);
     }
 }

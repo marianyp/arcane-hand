@@ -1,4 +1,4 @@
-package dev.mariany.arcanehand.logic;
+package dev.mariany.arcanehand.enchantment.logic.breaker;
 
 import com.google.common.collect.Sets;
 import dev.mariany.arcanehand.component.AHEnchantmentEffectComponents;
